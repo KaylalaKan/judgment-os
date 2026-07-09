@@ -149,6 +149,31 @@
     padding: 10px 12px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 13px;
   }
 
+  /* AI additions */
+  --ai: #4A6FA5;
+  --ai-light: #EEF2FA;
+
+  .ai-block {
+    background: #EEF2FA; border-left: 3px solid #4A6FA5;
+    padding: 10px 12px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 13px; color: #2D4A72; margin-top: 8px;
+  }
+
+  .ai-tag {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 700; color: #4A6FA5;
+    background: #D6E4F5; border-radius: 4px; padding: 1px 5px;
+    letter-spacing: 0.3px; vertical-align: middle; margin-right: 4px;
+  }
+
+  .ai-method-item {
+    background: #EEF2FA; border-left: 3px solid #4A6FA5;
+    padding: 10px 12px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 13px; color: #2D4A72; margin-top: 6px;
+  }
+
+  .ai-method-item:first-child { margin-top: 8px; }
+
   .empty { text-align: center; padding: 60px 0; color: var(--text-faint); font-size: 14px; }
 
   .theme-section { margin-bottom: 32px; }
@@ -283,7 +308,7 @@ async function init() {
   render();
 }
 
-function canFilm(n) { return n.judgment && (n.case || n.method); }
+function canFilm(n) { return n.judgment && (n.case || n.method || (n.method_ai && n.method_ai.length)); }
 function hasPart(n, p) { return !!(n[p] && n[p].trim()); }
 
 function matchesSearch(n, q) {
@@ -374,10 +399,25 @@ function cardHtml(node) {
   const filmBadge = film ? `<span class="film-badge">🎬 可以拍</span>` : '';
   const themeTags = (node.themes||[]).map(t => `<span class="theme-tag">${esc(t)}</span>`).join('');
 
+  const hasCNote = !!(node.case_note && node.case_note.trim());
+  const hasMAi = node.method_ai && node.method_ai.length > 0;
+
   let detail = '';
-  if (hasC) detail += `<div class="detail-section"><div class="detail-label">📍 案例</div><div class="detail-content">${esc(node.case)}</div></div>`;
+  if (hasC || hasCNote) {
+    detail += `<div class="detail-section"><div class="detail-label">📍 案例</div>`;
+    if (hasC) detail += `<div class="detail-content">${esc(node.case)}</div>`;
+    if (hasCNote) detail += `<div class="ai-block"><span class="ai-tag">AI 核实</span>${esc(node.case_note)}</div>`;
+    detail += `</div>`;
+  }
   if (hasJ) detail += `<div class="detail-section"><div class="detail-label">💡 判断</div><div class="detail-content judgment">${esc(node.judgment)}</div></div>`;
-  if (hasM) detail += `<div class="detail-section"><div class="detail-label">🔧 方法</div><div class="detail-content method">${esc(node.method)}</div></div>`;
+  if (hasM || hasMAi) {
+    detail += `<div class="detail-section"><div class="detail-label">🔧 方法</div>`;
+    if (hasM) detail += `<div class="detail-content method">${esc(node.method)}</div>`;
+    if (hasMAi) node.method_ai.forEach(m => {
+      detail += `<div class="ai-method-item"><span class="ai-tag">AI</span>${esc(m)}</div>`;
+    });
+    detail += `</div>`;
+  }
 
   return `<div class="node-card${film?' can-film':''}" id="node-${node.id}" onclick="toggleCard(this)">
     <div class="card-summary">
