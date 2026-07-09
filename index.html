@@ -1,577 +1,455 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Judgment OS</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mental Garden</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --bg:       #EEEAE3;
-      --surface:  #FFFFFF;
-      --border:   #E0DAD1;
-      --tp:       #1A1714;
-      --ts:       #6B6258;
-      --tm:       #A49E97;
-      --accent:   #2952CC;
-      --al:       #EBF0FF;
-      --radius:   14px;
-    }
+  :root {
+    --bg: #F5F1EB;
+    --surface: #FDFCFA;
+    --surface-hover: #F8F5F0;
+    --border: #E2DDD6;
+    --border-light: #EDE9E2;
+    --text: #1A1714;
+    --text-muted: #7A7068;
+    --text-faint: #B0A89E;
+    --accent: #4A7C59;
+    --accent-light: #EBF4EE;
+    --accent-muted: #6B9E7B;
+    --film: #C4622D;
+    --film-light: #FDF0E8;
+    --tag-bg: #EDE9E2;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif;
-      background: var(--bg);
-      color: var(--tp);
-      min-height: 100vh;
-      font-size: 14px;
-      line-height: 1.6;
-    }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
 
-    /* ── Header ── */
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(238,234,227,.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 14px 32px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
 
-    .logo-wrap { flex-shrink: 0; }
+  .logo {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+    white-space: nowrap;
+  }
+  .logo span { color: var(--accent); }
 
-    .logo-eye {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--tm);
-      line-height: 1;
-      margin-bottom: 2px;
-    }
+  .header-divider { width: 1px; height: 20px; background: var(--border); }
 
-    .logo-name {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -.3px;
-      color: var(--tp);
-    }
+  .search-wrap { flex: 1; max-width: 320px; position: relative; }
+  .search-icon {
+    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    color: var(--text-faint); font-size: 12px; pointer-events: none;
+  }
+  .search-input {
+    width: 100%; padding: 7px 12px 7px 30px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 20px; font-size: 13px;
+    color: var(--text); outline: none; transition: border-color 0.15s;
+  }
+  .search-input::placeholder { color: var(--text-faint); }
+  .search-input:focus { border-color: var(--accent-muted); }
 
-    .search {
-      flex: 1;
-      max-width: 320px;
-      margin-left: auto;
-    }
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .node-count { font-size: 12px; color: var(--text-faint); }
 
-    .search input {
-      width: 100%;
-      padding: 8px 14px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--surface);
-      font-size: 13px;
-      color: var(--tp);
-      outline: none;
-      transition: border-color .15s;
-    }
+  .add-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 14px; background: var(--accent); color: white;
+    border: none; border-radius: 20px; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .add-btn:hover { background: #3d6b4a; }
 
-    .search input::placeholder { color: var(--tm); }
-    .search input:focus { border-color: var(--accent); }
+  .layout { max-width: 800px; margin: 0 auto; padding: 32px 24px 80px; }
 
-    /* ── Grid ── */
-    .grid-wrap {
-      padding: 32px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
+  .section-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
+  .section-title { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .section-sub { font-size: 12px; color: var(--text-faint); }
 
-    .category-group { margin-bottom: 40px; }
+  .node-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 12px; overflow: hidden;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+  .node-card:hover { border-color: #D4CFC8; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .node-card.can-film { border-left: 3px solid var(--film); }
 
-    .category-label {
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--tm);
-      margin-bottom: 16px;
-      padding-left: 2px;
-    }
+  .card-summary {
+    padding: 16px 18px; cursor: pointer;
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .card-summary-body { flex: 1; min-width: 0; }
+  .trigger-text { font-size: 14px; color: var(--text); line-height: 1.55; margin-bottom: 10px; }
 
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-      gap: 20px;
-    }
+  .card-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
-    /* ── Card ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: box-shadow .2s, transform .2s;
-    }
+  .pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 500;
+    background: var(--tag-bg); color: var(--text-muted); border: 1px solid var(--border-light);
+  }
+  .pill.has { background: var(--accent-light); color: var(--accent); border-color: #C8E0D0; }
+  .pill-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.7; }
 
-    .card:hover {
-      box-shadow: 0 8px 32px rgba(0,0,0,.08);
-      transform: translateY(-1px);
-    }
+  .film-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600;
+    background: var(--film-light); color: var(--film); border: 1px solid #EAC9B4;
+  }
 
-    .card-head {
-      padding: 22px 22px 16px;
-      border-bottom: 1px solid var(--border);
-    }
+  .theme-tag { padding: 2px 7px; border-radius: 10px; font-size: 11px; background: var(--tag-bg); color: var(--text-muted); }
+  .card-date { font-size: 11px; color: var(--text-faint); margin-left: auto; }
 
-    .card-top-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
+  .expand-icon {
+    flex-shrink: 0; color: var(--text-faint); font-size: 16px; line-height: 1;
+    margin-top: 2px; transition: transform 0.2s; user-select: none;
+  }
+  .node-card.open .expand-icon { transform: rotate(180deg); }
 
-    .card-num {
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--accent);
-      letter-spacing: .06em;
-    }
+  .card-detail { display: none; border-top: 1px solid var(--border-light); }
+  .node-card.open .card-detail { display: block; }
 
-    .card-cat {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--ts);
-      background: #F0EDE7;
-      padding: 2px 9px;
-      border-radius: 20px;
-    }
+  .detail-sections { padding: 0 18px 18px; }
+  .detail-section { padding-top: 16px; }
+  .detail-section + .detail-section { border-top: 1px solid var(--border-light); margin-top: 4px; }
 
-    .card-ver {
-      margin-left: auto;
-      font-size: 11px;
-      color: var(--tm);
-      background: #F7F5F1;
-      border: 1px solid var(--border);
-      padding: 2px 9px;
-      border-radius: 20px;
-    }
+  .detail-label {
+    font-size: 11px; font-weight: 600; color: var(--text-faint);
+    text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
 
-    .card-title {
-      font-size: 20px;
-      font-weight: 800;
-      line-height: 1.2;
-      letter-spacing: -.3px;
-      margin-bottom: 6px;
-    }
+  .detail-content { font-size: 14px; color: var(--text); line-height: 1.65; }
+  .detail-content.judgment { font-weight: 500; }
+  .detail-content.method {
+    background: var(--accent-light); border-left: 3px solid var(--accent);
+    padding: 10px 12px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 13px;
+  }
 
-    .card-sub {
-      font-size: 13px;
-      color: var(--ts);
-      line-height: 1.55;
-    }
+  .empty { text-align: center; padding: 60px 0; color: var(--text-faint); font-size: 14px; }
 
-    /* ── Tabs ── */
-    .card-tabs {
-      display: flex;
-      gap: 6px;
-      padding: 14px 22px;
-      border-bottom: 1px solid var(--border);
-      overflow-x: auto;
-      flex-wrap: wrap;
-      row-gap: 6px;
-    }
+  .theme-section { margin-bottom: 32px; }
+  .radar-section { margin-bottom: 40px; }
 
-    .card-tabs::-webkit-scrollbar { display: none; }
+  .radar-strip { display: flex; gap: 8px; flex-wrap: wrap; }
+  .radar-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 7px 14px; background: var(--film-light); border: 1px solid #EAC9B4;
+    border-radius: 20px; font-size: 13px; color: var(--film); font-weight: 500;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .radar-chip:hover { background: #FAE0CE; }
 
-    .ctab {
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ts);
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all .15s;
-      white-space: nowrap;
-      background: #F2EFE9;
-    }
+  .welcome {
+    background: var(--surface); border: 1px dashed var(--border);
+    border-radius: var(--radius); padding: 48px 32px; text-align: center;
+  }
+  .welcome h2 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+  .welcome p { color: var(--text-muted); font-size: 13px; line-height: 1.7; max-width: 360px; margin: 0 auto; }
 
-    .ctab:hover { background: #E8E4DC; color: var(--tp); }
-
-    .ctab.active {
-      background: var(--al);
-      color: var(--accent);
-      border-color: #C5D3F5;
-    }
-
-    /* ── Content ── */
-    .card-body {
-      padding: 20px 22px 22px;
-      flex: 1;
-    }
-
-    .panel { display: none; }
-    .panel.active { display: block; }
-
-    /* Theory */
-    .sec { margin-bottom: 20px; }
-    .sec:last-child { margin-bottom: 0; }
-
-    .sec-lbl {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--tm);
-      margin-bottom: 8px;
-    }
-
-    .sec-txt {
-      font-size: 14px;
-      line-height: 1.75;
-      color: var(--tp);
-      white-space: pre-wrap;
-    }
-
-    /* Evolution */
-    .tl-item {
-      display: flex;
-      gap: 14px;
-      margin-bottom: 2px;
-    }
-
-    .tl-left {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 38px;
-      flex-shrink: 0;
-    }
-
-    .tl-dot {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: #F2EFE9;
-      border: 2px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      font-weight: 800;
-      color: var(--ts);
-      flex-shrink: 0;
-    }
-
-    .tl-dot.cur {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
-    .tl-spine {
-      width: 2px;
-      background: var(--border);
-      flex: 1;
-      min-height: 16px;
-      margin: 3px 0;
-    }
-
-    .tl-right { flex: 1; padding-bottom: 20px; }
-
-    .tl-title {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 4px;
-      line-height: 1.3;
-    }
-
-    .tl-desc {
-      font-size: 13px;
-      color: var(--ts);
-      line-height: 1.6;
-      margin-bottom: 6px;
-    }
-
-    .tl-tag {
-      display: inline-block;
-      font-size: 12px;
-      padding: 2px 9px;
-      border-radius: 4px;
-      line-height: 1.5;
-    }
-
-    .tl-tag.prob { background: #FFF3ED; color: #9A3412; }
-    .tl-tag.win  { background: #F0FDF4; color: #15803D; }
-
-    /* Rules */
-    .rule-item {
-      padding: 14px 16px;
-      background: #F9F7F4;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-
-    .rule-item:last-child { margin-bottom: 0; }
-
-    .rule-name {
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 5px;
-    }
-
-    .rule-body { font-size: 13px; color: var(--ts); line-height: 1.65; }
-
-    /* Quotes */
-    .quote-item {
-      border-left: 3px solid var(--accent);
-      background: var(--al);
-      padding: 11px 14px;
-      border-radius: 0 6px 6px 0;
-      font-size: 14px;
-      line-height: 1.65;
-      color: var(--tp);
-      margin-bottom: 10px;
-    }
-
-    .quote-item:last-child { margin-bottom: 0; }
-
-    /* Agenda */
-    .agenda-item {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      padding: 10px 13px;
-      background: #F9F7F4;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 13px;
-      color: var(--ts);
-      line-height: 1.55;
-      margin-bottom: 8px;
-    }
-
-    .agenda-item:last-child { margin-bottom: 0; }
-
-    .agenda-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--tm);
-      flex-shrink: 0;
-      margin-top: 7px;
-    }
-
-    /* Empty */
-    .empty {
-      padding: 24px;
-      text-align: center;
-      font-size: 13px;
-      color: var(--tm);
-      border: 1px dashed var(--border);
-      border-radius: 8px;
-    }
-
-    /* Card footer */
-    .card-foot {
-      padding: 10px 22px;
-      border-top: 1px solid var(--border);
-      font-size: 11px;
-      color: var(--tm);
-    }
-
-    /* Mobile */
-    @media (max-width: 600px) {
-      .header { padding: 12px 16px; }
-      .grid-wrap { padding: 16px; }
-      .card-grid { grid-template-columns: 1fr; gap: 14px; }
-      .card-head { padding: 16px 16px 12px; }
-      .card-tabs { padding: 10px 16px; }
-      .card-body { padding: 16px 16px 18px; }
-      .card-title { font-size: 17px; }
-      .search { max-width: 180px; }
-    }
-  </style>
+  /* Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+    z-index: 200; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface); border-radius: var(--radius); width: 100%;
+    max-width: 560px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .modal-head { padding: 20px 20px 0; display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 15px; font-weight: 600; }
+  .modal-close {
+    width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+    border: none; background: var(--tag-bg); border-radius: 50%; cursor: pointer;
+    font-size: 13px; color: var(--text-muted);
+  }
+  .modal-body { padding: 20px; }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block; font-size: 12px; font-weight: 600; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+  }
+  .field textarea, .field input {
+    width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 14px; color: var(--text);
+    font-family: inherit; resize: vertical; outline: none; line-height: 1.55;
+    transition: border-color 0.15s;
+  }
+  .field textarea:focus, .field input:focus { border-color: var(--accent-muted); }
+  .field textarea { min-height: 68px; }
+  .field-hint { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+  .modal-footer { padding: 0 20px 20px; display: flex; gap: 8px; justify-content: flex-end; }
+  .btn-cancel {
+    padding: 8px 16px; background: var(--tag-bg); border: none; border-radius: 20px;
+    font-size: 13px; cursor: pointer; color: var(--text-muted);
+  }
+  .btn-save {
+    padding: 8px 18px; background: var(--accent); color: white; border: none;
+    border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer;
+  }
+  .btn-save:hover { background: #3d6b4a; }
+</style>
 </head>
 <body>
 
 <header class="header">
-  <div class="logo-wrap">
-    <div class="logo-eye">Research System</div>
-    <div class="logo-name">Judgment OS</div>
+  <div class="logo">Mental <span>Garden</span></div>
+  <div class="header-divider"></div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-input" id="searchInput" placeholder="搜索节点…">
   </div>
-  <div class="search">
-    <input type="text" id="searchInput" placeholder="搜索议题…" oninput="filterCards(this.value)">
+  <div class="header-right">
+    <span class="node-count" id="nodeCount"></span>
+    <button class="add-btn" onclick="openModal()">＋ 记录触动</button>
   </div>
 </header>
 
-<div class="grid-wrap" id="gridWrap"></div>
+<div class="layout" id="app">
+  <div style="color:#B0A89E;font-size:13px;">加载中…</div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">记录一个触动</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>触动 Trigger *</label>
+        <textarea id="f-trigger" placeholder="让你停下来的那句话、那件事、那个瞬间…" rows="3"></textarea>
+      </div>
+      <div class="field">
+        <label>案例 Case</label>
+        <textarea id="f-case" placeholder="谁做了什么，发生了什么…（要有具体人物或情境）"></textarea>
+      </div>
+      <div class="field">
+        <label>判断 Judgment</label>
+        <textarea id="f-judgment" placeholder="你从中得出了什么结论？"></textarea>
+      </div>
+      <div class="field">
+        <label>方法 Method</label>
+        <textarea id="f-method" placeholder="可以怎么用？下次遇到类似情况怎么做？"></textarea>
+      </div>
+      <div class="field">
+        <label>主题 Theme</label>
+        <input type="text" id="f-themes" placeholder="AI应用、认知偏差、组织管理…">
+        <div class="field-hint">多个主题用逗号分隔</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-save" onclick="saveNode()">存入花园</button>
+    </div>
+  </div>
+</div>
 
 <script>
-  const TABS = [
-    { id: 'theory',    label: '当前理论' },
-    { id: 'evolution', label: '来时路'   },
-    { id: 'rules',     label: '规则'     },
-    { id: 'quotes',    label: '金句'     },
-    { id: 'agenda',    label: '研究议程' },
-    { id: 'cases',     label: '案例'     },
-    { id: 'methods',   label: '方法'     },
-  ];
+let allNodes = [];
+let searchQuery = '';
 
-  let allCards = [];
-  const activeTab = {}; // cardId → tabId
+async function init() {
+  try {
+    const res = await fetch('data/nodes.json?t=' + Date.now());
+    const data = await res.json();
+    allNodes = data.nodes || [];
+  } catch(e) { allNodes = []; }
+  render();
+}
 
-  async function init() {
-    try {
-      const r = await fetch('data/cards.json');
-      const d = await r.json();
-      allCards = d.cards || [];
-      allCards.forEach(c => activeTab[c.id] = 'theory');
-      render(allCards);
-    } catch(e) {
-      document.getElementById('gridWrap').innerHTML =
-        '<p style="color:#A49E97;padding:40px">无法加载数据</p>';
-    }
+function canFilm(n) { return n.judgment && (n.case || n.method); }
+function hasPart(n, p) { return !!(n[p] && n[p].trim()); }
+
+function matchesSearch(n, q) {
+  if (!q) return true;
+  const text = [n.trigger, n.case, n.judgment, n.method, ...(n.themes||[])].join(' ').toLowerCase();
+  return q.toLowerCase().split(/\s+/).every(w => text.includes(w));
+}
+
+function render() {
+  const app = document.getElementById('app');
+  const q = searchQuery.trim();
+  const filtered = allNodes.filter(n => matchesSearch(n, q));
+  document.getElementById('nodeCount').textContent = allNodes.length + ' 个节点';
+
+  if (allNodes.length === 0) {
+    app.innerHTML = `<div class="welcome">
+      <h2>🌱 花园还是空的</h2>
+      <p>点击右上角「记录触动」，把今天让你停下来的瞬间存进来。<br>有了判断 + 案例，就可以拍视频了。</p>
+    </div>`;
+    return;
   }
 
-  function filterCards(q) {
-    const s = q.toLowerCase();
-    render(s ? allCards.filter(c =>
-      c.title.toLowerCase().includes(s) ||
-      c.subtitle.toLowerCase().includes(s) ||
-      (c.currentTheory || '').toLowerCase().includes(s)
-    ) : allCards);
-  }
+  let html = '';
+  const filmable = filtered.filter(canFilm);
 
-  function render(list) {
-    const wrap = document.getElementById('gridWrap');
-    const groups = {};
-    list.forEach(c => {
-      const g = c.category || '未分类';
-      (groups[g] = groups[g] || []).push(c);
+  if (!q && filmable.length > 0) {
+    html += `<div class="radar-section">
+      <div class="section-head">
+        <span class="section-title">🎬 创作雷达</span>
+        <span class="section-sub">这些节点可以拍了</span>
+      </div>
+      <div class="radar-strip">`;
+    filmable.forEach(n => {
+      html += `<span class="radar-chip" onclick="scrollToNode('${n.id}')">🎬 ${esc(short(n.trigger, 20))}</span>`;
     });
-
-    wrap.innerHTML = Object.entries(groups).map(([g, cards]) => `
-      <div class="category-group">
-        <div class="category-label">${g}</div>
-        <div class="card-grid">
-          ${cards.map(buildCard).join('')}
-        </div>
-      </div>
-    `).join('');
+    html += `</div></div>`;
   }
 
-  function buildCard(c) {
-    const at = activeTab[c.id] || 'theory';
-    return `
-      <div class="card" id="card-${c.id}">
-        <div class="card-head">
-          <div class="card-top-row">
-            <span class="card-num">#${c.id}</span>
-            <span class="card-cat">${c.category || '未分类'}</span>
-            <span class="card-ver">${c.currentVersion || 'V1'}</span>
-          </div>
-          <div class="card-title">${c.title}</div>
-          <div class="card-sub">${c.subtitle}</div>
-        </div>
-        <div class="card-tabs">
-          ${TABS.map(t => `
-            <div class="ctab ${t.id === at ? 'active' : ''}"
-                 onclick="switchTab('${c.id}','${t.id}',this)">${t.label}</div>
-          `).join('')}
-        </div>
-        <div class="card-body">
-          ${TABS.map(t => `
-            <div class="panel ${t.id === at ? 'active' : ''}" id="p-${c.id}-${t.id}">
-              ${buildContent(t.id, c)}
-            </div>
-          `).join('')}
-        </div>
-        <div class="card-foot">更新于 ${c.updatedAt || '—'}</div>
-      </div>
-    `;
-  }
+  const themesMap = {};
+  filtered.forEach(n => {
+    (n.themes || []).forEach(t => {
+      if (!themesMap[t]) themesMap[t] = [];
+      themesMap[t].push(n);
+    });
+  });
+  const themes = Object.keys(themesMap);
 
-  function switchTab(cardId, tabId) {
-    activeTab[cardId] = tabId;
-    const card = document.getElementById('card-' + cardId);
-    card.querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
-    card.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    event.target.classList.add('active');
-    card.querySelector('#p-' + cardId + '-' + tabId).classList.add('active');
-  }
-
-  function nl(s) { return s ? s.replace(/\n/g, '<br>') : ''; }
-  function empty(msg) { return `<div class="empty">${msg || '暂无内容'}</div>`; }
-
-  function buildContent(tab, c) {
-    switch(tab) {
-      case 'theory':
-        if (!c.why && !c.currentTheory) return empty('尚未建立理论');
-        return `
-          ${c.why ? `<div class="sec"><div class="sec-lbl">为什么值得研究</div><div class="sec-txt">${nl(c.why)}</div></div>` : ''}
-          ${c.currentTheory ? `<div class="sec"><div class="sec-lbl">当前理论</div><div class="sec-txt">${nl(c.currentTheory)}</div></div>` : ''}
-        `;
-
-      case 'evolution':
-        if (!c.evolution?.length) return empty('还没有演进历史');
-        return c.evolution.map((item, i) => {
-          const last = i === c.evolution.length - 1;
-          return `
-            <div class="tl-item">
-              <div class="tl-left">
-                <div class="tl-dot ${last ? 'cur' : ''}">${item.version}</div>
-                ${!last ? '<div class="tl-spine"></div>' : ''}
-              </div>
-              <div class="tl-right">
-                <div class="tl-title">${item.title}</div>
-                <div class="tl-desc">${item.content}</div>
-                ${item.problem      ? `<span class="tl-tag prob">问题：${item.problem}</span>` : ''}
-                ${item.breakthrough ? `<span class="tl-tag win">突破：${item.breakthrough}</span>` : ''}
-              </div>
-            </div>`;
-        }).join('');
-
-      case 'rules':
-        if (!c.rules?.length) return empty('暂无规则');
-        return c.rules.map(r => `
-          <div class="rule-item">
-            <div class="rule-name">${r.name}</div>
-            <div class="rule-body">${r.content}</div>
-          </div>`).join('');
-
-      case 'quotes':
-        if (!c.quotes?.length) return empty('暂无金句');
-        return c.quotes.map(q => `<div class="quote-item">${q}</div>`).join('');
-
-      case 'agenda':
-        if (!c.agenda?.length) return empty('暂无待研究问题');
-        return c.agenda.map(a => `
-          <div class="agenda-item"><div class="agenda-dot"></div>${a}</div>`).join('');
-
-      case 'cases':
-        if (!c.cases?.length) return empty('还没有案例，等待积累');
-        return c.cases.map(x => `<div class="sec-txt">${nl(x)}</div>`).join('<hr style="border:none;border-top:1px solid var(--border);margin:16px 0">');
-
-      case 'methods':
-        if (!c.methods?.length) return empty('还没有方法，等待积累');
-        return c.methods.map(x => `<div class="sec-txt">${nl(x)}</div>`).join('<hr style="border:none;border-top:1px solid var(--border);margin:16px 0">');
-
-      default: return empty();
+  if (!q && themes.length >= 1) {
+    const rendered = new Set();
+    themes.forEach(theme => {
+      html += `<div class="theme-section">
+        <div class="section-head">
+          <span class="section-title">${esc(theme)}</span>
+          <span class="section-sub">${themesMap[theme].length} 个</span>
+        </div>`;
+      themesMap[theme].forEach(n => {
+        if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); }
+      });
+      html += `</div>`;
+    });
+    const unthemed = filtered.filter(n => !n.themes || n.themes.length === 0);
+    if (unthemed.length) {
+      html += `<div class="theme-section"><div class="section-head"><span class="section-title">其他</span></div>`;
+      unthemed.forEach(n => { html += cardHtml(n); });
+      html += `</div>`;
+    }
+  } else {
+    if (filtered.length === 0) {
+      html += `<div class="empty">没有找到匹配的节点</div>`;
+    } else {
+      filtered.forEach(n => { html += cardHtml(n); });
     }
   }
 
-  init();
+  app.innerHTML = html;
+}
+
+function cardHtml(node) {
+  const film = canFilm(node);
+  const hasJ = hasPart(node, 'judgment');
+  const hasC = hasPart(node, 'case');
+  const hasM = hasPart(node, 'method');
+
+  const pills = [
+    {label:'判断', has:hasJ}, {label:'案例', has:hasC}, {label:'方法', has:hasM}
+  ].map(p => `<span class="pill${p.has?' has':''}"><span class="pill-dot"></span>${p.label}</span>`).join('');
+
+  const filmBadge = film ? `<span class="film-badge">🎬 可以拍</span>` : '';
+  const themeTags = (node.themes||[]).map(t => `<span class="theme-tag">${esc(t)}</span>`).join('');
+
+  let detail = '';
+  if (hasC) detail += `<div class="detail-section"><div class="detail-label">📍 案例</div><div class="detail-content">${esc(node.case)}</div></div>`;
+  if (hasJ) detail += `<div class="detail-section"><div class="detail-label">💡 判断</div><div class="detail-content judgment">${esc(node.judgment)}</div></div>`;
+  if (hasM) detail += `<div class="detail-section"><div class="detail-label">🔧 方法</div><div class="detail-content method">${esc(node.method)}</div></div>`;
+
+  return `<div class="node-card${film?' can-film':''}" id="node-${node.id}" onclick="toggleCard(this)">
+    <div class="card-summary">
+      <div class="card-summary-body">
+        <div class="trigger-text">${esc(node.trigger)}</div>
+        <div class="card-meta">${pills}${themeTags}${filmBadge}<span class="card-date">${node.date||''}</span></div>
+      </div>
+      <div class="expand-icon">⌄</div>
+    </div>
+    <div class="card-detail"><div class="detail-sections">${detail}</div></div>
+  </div>`;
+}
+
+function toggleCard(card) { card.classList.toggle('open'); }
+
+function scrollToNode(id) {
+  const el = document.getElementById('node-' + id);
+  if (el) { el.scrollIntoView({behavior:'smooth', block:'start'}); setTimeout(() => el.classList.add('open'), 300); }
+}
+
+function esc(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');
+}
+
+function short(s, max) { return s && s.length > max ? s.slice(0,max)+'…' : (s||''); }
+
+document.getElementById('searchInput').addEventListener('input', function() {
+  searchQuery = this.value; render();
+});
+
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('f-trigger').focus();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  ['f-trigger','f-case','f-judgment','f-method','f-themes'].forEach(id => { document.getElementById(id).value=''; });
+}
+
+function saveNode() {
+  const trigger = document.getElementById('f-trigger').value.trim();
+  if (!trigger) { alert('触动（Trigger）是必填的。'); return; }
+  const themesRaw = document.getElementById('f-themes').value.trim();
+  const themes = themesRaw ? themesRaw.split(/[,，]+/).map(t=>t.trim()).filter(Boolean) : [];
+  const today = new Date().toISOString().slice(0,10);
+  const nextId = String(allNodes.length + 1).padStart(3,'0');
+  const node = {
+    id: nextId, date: today,
+    trigger,
+    case: document.getElementById('f-case').value.trim(),
+    judgment: document.getElementById('f-judgment').value.trim(),
+    method: document.getElementById('f-method').value.trim(),
+    themes, updatedAt: today
+  };
+  allNodes.unshift(node);
+  closeModal();
+  render();
+  const json = JSON.stringify({nodes: allNodes}, null, 2);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([json], {type:'application/json'}));
+  a.download = 'nodes.json';
+  a.click();
+  setTimeout(() => alert('✅ 节点已添加！\n\nnodes.json 已下载。\n把它放到 judgment-os/data/ 文件夹里，替换原文件，然后运行 git push，花园就更新了。'), 200);
+}
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+init();
 </script>
 </body>
 </html>
