@@ -1,0 +1,82 @@
+{
+  "cards": [
+    {
+      "id": "000",
+      "category": "元系统",
+      "title": "Judgment OS",
+      "subtitle": "一个人的思想资产，应该如何被记录、沉淀和调用？",
+      "currentVersion": "V5",
+      "why": "未来所有课程、演讲、短视频、产品研发，都会建立在这套系统之上。\n\n如果系统设计错了，未来几年所有资产都会越来越乱。\n如果设计对了，未来几年所有研究都会不断复利。\n\n这是整个 Judgment OS 唯一一张「元卡片（Meta Card）」。",
+      "currentTheory": "Judgment OS 不是笔记系统，也不是知识库。\n它是思想资产的生产系统。\n\n三个阶段：\n\nResearch Log\n→ 记录今天发生了什么认知变化\n\nResearch Card\n→ 沉淀一个问题目前研究到了哪里\n\nProduction\n→ 课程、直播、短视频、演讲全部先调用 Research Card，\n   而不是重新开始思考",
+      "evolution": [
+        {
+          "version": "V0",
+          "title": "做日报",
+          "content": "最开始的目标只是每天整理聊天记录。",
+          "problem": "容易变成流水账。"
+        },
+        {
+          "version": "V1",
+          "title": "做判断日报",
+          "content": "升级成每天记录新的判断。",
+          "problem": "会逼自己每天制造「新观点」，忽略了很多时候只是增加了新的案例。"
+        },
+        {
+          "version": "V2",
+          "title": "做数据库",
+          "content": "开始设计 Question / Evidence / Quote 分别管理。",
+          "problem": "研究被拆碎了。一个问题要跳三四张表，来时路消失。"
+        },
+        {
+          "version": "V3",
+          "title": "Research Card",
+          "content": "真正应该管理的是「问题」。所有案例、证据、金句、方法都围绕一个子问题形成 Research Card。",
+          "breakthrough": "第一次真正稳定。"
+        },
+        {
+          "version": "V4",
+          "title": "Log + Card 双层",
+          "content": "Card 负责目前研究到哪里。Research Log 负责记录今天发生了什么认知变化。Card 同步最新研究成果。",
+          "breakthrough": "第一次形成双层结构，来时路不再消失。"
+        },
+        {
+          "version": "V5",
+          "title": "加入调用规则，形成闭环",
+          "content": "任何创作开始之前，先查 Card，而不是先想。没有 Card，先建 Card。",
+          "breakthrough": "从记录系统变成了生产系统，形成完整闭环。"
+        }
+      ],
+      "rules": [
+        {
+          "name": "入库规则",
+          "content": "只有发生认知变化才更新。包括：新问题、新判断、判断修正、新证据、新反例。"
+        },
+        {
+          "name": "更新规则",
+          "content": "Log 记录今天发生什么，Card 记录目前长到哪里。"
+        },
+        {
+          "name": "调用规则",
+          "content": "任何创作先查 Card。没有 Card，先建 Card。"
+        }
+      ],
+      "quotes": [
+        "我们不是整理聊天记录，我们是在建立思想资产。",
+        "Log 记录来时路，Card 记录目前研究到哪里。",
+        "任何创作开始之前，先查 Card，而不是先想。",
+        "允许问题长期存在，但不允许问题停止生长。"
+      ],
+      "agenda": [
+        "Log 应该更新到什么粒度？（一场对话 / 一天 / 一次认知变化？）",
+        "Card 应该什么时候升级 Version？需要标准。",
+        "调用规则应该做到多强？所有创作还是只有重大创作？",
+        "自动化边界在哪里？哪些由 Claude 完成，哪些必须人工确认？"
+      ],
+      "cases": [],
+      "methods": [],
+      "corrections": [],
+      "evidence": [],
+      "updatedAt": "2026-07-09"
+    }
+  ]
+}

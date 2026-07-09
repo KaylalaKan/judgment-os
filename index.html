@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Judgment OS</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:            #F6F4F0;
+      --sidebar-bg:    #EDEAE4;
+      --surface:       #FFFFFF;
+      --border:        #DDD9D2;
+      --text-primary:  #1C1A17;
+      --text-secondary:#6A6460;
+      --text-muted:    #A09B95;
+      --accent:        #2952CC;
+      --accent-light:  #EDF1FB;
+      --tag-bg:        #E8E4DC;
+      --sidebar-w:     272px;
+      --radius:        8px;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      display: flex;
+      overflow: hidden;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-top {
+      padding: 22px 18px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .sidebar-brand {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -.3px;
+    }
+
+    .sidebar-search {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-search input {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      font-size: 13px;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .sidebar-search input::placeholder { color: var(--text-muted); }
+    .sidebar-search input:focus { border-color: var(--accent); }
+
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px 0 24px;
+    }
+
+    .nav-group { margin-top: 18px; }
+
+    .nav-group-label {
+      padding: 0 18px 5px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .nav-item {
+      padding: 9px 18px;
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: background .1s;
+    }
+
+    .nav-item:hover { background: rgba(0,0,0,.04); }
+
+    .nav-item.active {
+      background: var(--accent-light);
+      border-left-color: var(--accent);
+    }
+
+    .nav-item-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 1px;
+    }
+
+    .nav-item.active .nav-item-num { color: var(--accent); }
+
+    .nav-item-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .nav-item-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ── Main ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .empty-state {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      letter-spacing: .02em;
+    }
+
+    /* ── Card Detail ── */
+    .card-detail {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 44px 44px 100px;
+    }
+
+    /* Header */
+    .card-head { margin-bottom: 28px; }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .meta-id {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: .06em;
+    }
+
+    .meta-cat {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: var(--tag-bg);
+      padding: 2px 9px;
+      border-radius: 20px;
+    }
+
+    .meta-ver {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2px 9px;
+      border-radius: 20px;
+    }
+
+    .card-title {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.4px;
+      margin-bottom: 10px;
+    }
+
+    .card-subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 36px;
+      gap: 0;
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 9px 15px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      white-space: nowrap;
+      transition: color .15s, border-color .15s;
+    }
+
+    .tab:hover { color: var(--text-primary); }
+
+    .tab.active {
+      color: var(--accent);
+      font-weight: 600;
+      border-bottom-color: var(--accent);
+    }
+
+    /* Panels */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* Section */
+    .section { margin-bottom: 36px; }
+
+    .sec-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .sec-body {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+    }
+
+    /* Evolution timeline */
+    .timeline { }
+
+    .tl-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 4px;
+    }
+
+    .tl-spine {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 44px;
+      flex-shrink: 0;
+    }
+
+    .tl-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      letter-spacing: .02em;
+    }
+
+    .tl-badge.is-current {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .tl-line {
+      width: 2px;
+      background: var(--border);
+      flex: 1;
+      min-height: 20px;
+      margin: 4px 0;
+    }
+
+    .tl-body {
+      flex: 1;
+      padding-bottom: 28px;
+    }
+
+    .tl-ver-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      line-height: 1.3;
+    }
+
+    .tl-content {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 8px;
+    }
+
+    .tl-tag {
+      display: inline-block;
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 4px;
+      line-height: 1.5;
+    }
+
+    .tl-tag.problem {
+      background: #FFF3ED;
+      color: #9A3412;
+    }
+
+    .tl-tag.breakthrough {
+      background: #F0FDF4;
+      color: #15803D;
+    }
+
+    /* Rules */
+    .rules { display: flex; flex-direction: column; gap: 12px; }
+
+    .rule {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+    }
+
+    .rule-name {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .rule-body {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* Quotes */
+    .quotes { display: flex; flex-direction: column; gap: 10px; }
+
+    .quote {
+      border-left: 3px solid var(--accent);
+      padding: 12px 16px;
+      background: var(--accent-light);
+      border-radius: 0 6px 6px 0;
+      font-size: 15px;
+      color: var(--text-primary);
+      line-height: 1.65;
+    }
+
+    /* Agenda */
+    .agenda { display: flex; flex-direction: column; gap: 8px; }
+
+    .agenda-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .agenda-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    /* Empty */
+    .empty-block {
+      padding: 28px 20px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+    }
+
+    /* Footer */
+    .card-footer {
+      margin-top: 48px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* Mobile */
+    @media (max-width: 700px) {
+      body { flex-direction: column; height: auto; overflow: auto; }
+      .sidebar { width: 100%; min-width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      .sidebar-nav { max-height: 220px; }
+      .card-detail { padding: 24px 18px 60px; }
+      .card-title { font-size: 22px; }
+      .main { overflow: visible; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-top">
+    <div class="sidebar-eyebrow">Research System</div>
+    <div class="sidebar-brand">Judgment OS</div>
+  </div>
+  <div class="sidebar-search">
+    <input type="text" id="searchInput" placeholder="搜索卡片…" oninput="filterCards(this.value)">
+  </div>
+  <div class="sidebar-nav" id="sidebarNav"></div>
+</nav>
+
+<!-- Main -->
+<main class="main" id="mainArea">
+  <div class="empty-state" id="emptyState">← 选择左侧卡片</div>
+  <div class="card-detail" id="cardDetail" style="display:none"></div>
+</main>
+
+<script>
+  let allCards = [];
+  let activeId  = null;
+  let activeTab = 'theory';
+
+  /* ── Load ── */
+  async function init() {
+    try {
+      const r = await fetch('data/cards.json');
+      const d = await r.json();
+      allCards = d.cards || [];
+      paintSidebar(allCards);
+      if (allCards.length) openCard(allCards[0].id);
+    } catch(e) {
+      document.getElementById('emptyState').textContent = '无法加载数据，请检查 data/cards.json';
+    }
+  }
+
+  /* ── Sidebar ── */
+  function paintSidebar(list) {
+    const groups = {};
+    list.forEach(c => {
+      const g = c.category || '未分类';
+      (groups[g] = groups[g] || []).push(c);
+    });
+
+    document.getElementById('sidebarNav').innerHTML =
+      Object.entries(groups).map(([g, items]) => `
+        <div class="nav-group">
+          <div class="nav-group-label">${g}</div>
+          ${items.map(c => `
+            <div class="nav-item ${c.id === activeId ? 'active' : ''}" onclick="openCard('${c.id}')">
+              <div class="nav-item-num">#${c.id}</div>
+              <div class="nav-item-name">${c.title}</div>
+              <div class="nav-item-sub">${c.subtitle}</div>
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+  }
+
+  function filterCards(q) {
+    const s = q.toLowerCase();
+    paintSidebar(s
+      ? allCards.filter(c =>
+          c.title.toLowerCase().includes(s) ||
+          c.subtitle.toLowerCase().includes(s) ||
+          (c.currentTheory || '').toLowerCase().includes(s))
+      : allCards);
+  }
+
+  /* ── Open Card ── */
+  function openCard(id) {
+    activeId  = id;
+    activeTab = 'theory';
+    const card = allCards.find(c => c.id === id);
+    if (!card) return;
+    paintSidebar(allCards);
+    paintCard(card);
+    document.getElementById('emptyState').style.display  = 'none';
+    document.getElementById('cardDetail').style.display  = 'block';
+    document.getElementById('mainArea').scrollTop = 0;
+  }
+
+  /* ── Paint Card ── */
+  function paintCard(c) {
+    const TABS = [
+      { id: 'theory',    label: '当前理论' },
+      { id: 'evolution', label: '来时路'   },
+      { id: 'rules',     label: '规则'     },
+      { id: 'quotes',    label: '金句'     },
+      { id: 'agenda',    label: '研究议程' },
+      { id: 'cases',     label: '案例'     },
+      { id: 'methods',   label: '方法'     },
+    ];
+
+    document.getElementById('cardDetail').innerHTML = `
+      <div class="card-head">
+        <div class="card-meta">
+          <span class="meta-id">#${c.id}</span>
+          <span class="meta-cat">${c.category || '未分类'}</span>
+          <span class="meta-ver">当前版本 ${c.currentVersion || 'V1'}</span>
+        </div>
+        <h1 class="card-title">${c.title}</h1>
+        <p class="card-subtitle">${c.subtitle}</p>
+      </div>
+
+      <div class="tabs">
+        ${TABS.map(t => `
+          <div class="tab ${t.id === activeTab ? 'active' : ''}"
+               onclick="switchTab('${t.id}', this)">${t.label}</div>
+        `).join('')}
+      </div>
+
+      ${TABS.map(t => `
+        <div class="panel ${t.id === activeTab ? 'active' : ''}" id="panel-${t.id}">
+          ${buildPanel(t.id, c)}
+        </div>
+      `).join('')}
+
+      <div class="card-footer">最后更新：${c.updatedAt || '—'}</div>
+    `;
+  }
+
+  /* ── Switch Tab ── */
+  function switchTab(id, el) {
+    activeTab = id;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('panel-' + id).classList.add('active');
+  }
+
+  /* ── Build Panels ── */
+  function buildPanel(tab, c) {
+    const empty = (msg) => `<div class="empty-block">${msg || '暂无内容'}</div>`;
+    const nl    = (s)   => s ? s.replace(/\n/g, '<br>') : '';
+
+    switch (tab) {
+
+      case 'theory':
+        return `
+          ${c.why ? `
+            <div class="section">
+              <div class="sec-label">为什么值得研究</div>
+              <div class="sec-body">${nl(c.why)}</div>
+            </div>
+          ` : ''}
+          <div class="section">
+            <div class="sec-label">当前理论</div>
+            ${c.currentTheory
+              ? `<div class="sec-body">${nl(c.currentTheory)}</div>`
+              : empty('尚未建立当前理论')}
+          </div>
+        `;
+
+      case 'evolution':
+        if (!c.evolution || !c.evolution.length) return empty('还没有演进历史');
+        return `<div class="timeline">` +
+          c.evolution.map((item, i) => {
+            const last = i === c.evolution.length - 1;
+            return `
+              <div class="tl-item">
+                <div class="tl-spine">
+                  <div class="tl-badge ${last ? 'is-current' : ''}">${item.version}</div>
+                  ${!last ? '<div class="tl-line"></div>' : ''}
+                </div>
+                <div class="tl-body">
+                  <div class="tl-ver-title">${item.title}</div>
+                  <div class="tl-content">${item.content}</div>
+                  ${item.problem     ? `<span class="tl-tag problem">问题：${item.problem}</span>` : ''}
+                  ${item.breakthrough? `<span class="tl-tag breakthrough">突破：${item.breakthrough}</span>` : ''}
+                </div>
+              </div>`;
+          }).join('') + `</div>`;
+
+      case 'rules':
+        if (!c.rules || !c.rules.length) return empty('暂无规则');
+        return `<div class="rules">` +
+          c.rules.map(r => `
+            <div class="rule">
+              <div class="rule-name">${r.name}</div>
+              <div class="rule-body">${r.content}</div>
+            </div>`).join('') + `</div>`;
+
+      case 'quotes':
+        if (!c.quotes || !c.quotes.length) return empty('暂无金句');
+        return `<div class="quotes">` +
+          c.quotes.map(q => `<div class="quote">${q}</div>`).join('') + `</div>`;
+
+      case 'agenda':
+        if (!c.agenda || !c.agenda.length) return empty('暂无待研究问题');
+        return `<div class="agenda">` +
+          c.agenda.map(a => `
+            <div class="agenda-item"><div class="agenda-dot"></div>${a}</div>`
+          ).join('') + `</div>`;
+
+      case 'cases':
+        if (!c.cases || !c.cases.length) return empty('还没有案例，等待积累');
+        return c.cases.map(x => `<div class="sec-body">${nl(x)}</div>`).join('<hr style="border:none;border-top:1px solid var(--border);margin:20px 0">');
+
+      case 'methods':
+        if (!c.methods || !c.methods.length) return empty('还没有方法，等待积累');
+        return c.methods.map(x => `<div class="sec-body">${nl(x)}</div>`).join('<hr style="border:none;border-top:1px solid var(--border);margin:20px 0">');
+
+      default:
+        return empty();
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
