@@ -4,388 +4,441 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mental Garden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #EDE8DF;
-  --bg-lines: rgba(0,0,0,.025);
-  --card: #FDFAF3;
-  --card-shadow: 0 1px 2px rgba(0,0,0,.07), 0 4px 10px rgba(0,0,0,.08), 3px 6px 16px rgba(0,0,0,.05);
-  --card-hover: 0 2px 4px rgba(0,0,0,.09), 0 8px 20px rgba(0,0,0,.11), 4px 10px 24px rgba(0,0,0,.07);
-  --border: rgba(0,0,0,.07);
-  --text: #1C1814;
-  --text-muted: #7A7068;
-  --text-faint: #B0A89E;
-  --accent: #4A7C59;
-  --accent-light: #EBF4EE;
-  --film: #C4622D;
-  --film-light: #FDF0E8;
-  --ai-bg: #EEF2FA;
-  --ai-text: #2D4A72;
-  --ai-border: #4A6FA5;
-  --tag-bg: #EDE8DF;
-  --radius: 6px;
+  --ink: #000000;
+  --charcoal: #18191b;
+  --slate: #6a6a6c;
+  --steel: #7d7f80;
+  --ash: #acadae;
+  --fog: #bbbbbb;
+  --mist: #c4c4c4;
+  --pebble: #dbdbdb;
+  --cloud: #f2f2f2;
+  --snow: #f9f9f9;
+  --paper: #ffffff;
+  --fern: #448f52;
+  --mint: #dbeddf;
+  --gradient-ash: linear-gradient(90deg, #acadae 0%, #acadae 30%, #6dc078 35%, #99b7fa 40%, #acadae 45%, #acadae 100%);
+  --shadow: rgba(0,0,0,0.1) 0px 10px 15px -3px, rgba(0,0,0,0.1) 0px 4px 6px -4px;
+  --r-card: 20px;
+  --r-btn: 9999px;
+  --r-input: 20px;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-ui: 'Inter', system-ui, sans-serif;
 }
 
 body {
-  background-color: var(--bg);
-  background-image:
-    repeating-linear-gradient(0deg, transparent, transparent 27px, var(--bg-lines) 27px, var(--bg-lines) 28px);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", sans-serif;
+  background: var(--snow);
+  color: var(--charcoal);
+  font-family: var(--font-ui);
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.56;
+  letter-spacing: 0.02em;
   min-height: 100vh;
 }
 
-/* ── Header ── */
-.header {
-  background: rgba(237,232,223,0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0,0,0,.08);
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  height: 52px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* ── NAV ── */
+.nav-wrap {
+  position: sticky; top: 16px; z-index: 100;
+  display: flex; justify-content: center;
+  padding: 0 20px;
+  pointer-events: none;
+}
+.nav {
+  pointer-events: all;
+  display: flex; align-items: center; gap: 24px;
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--mist);
+  border-radius: var(--r-btn);
+  padding: 10px 20px;
+  box-shadow: var(--shadow);
+  width: 100%; max-width: 760px;
 }
 
-.logo {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: -0.2px;
-  color: var(--text);
+.wordmark {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--charcoal);
+  white-space: nowrap;
+  text-decoration: none;
+  letter-spacing: normal;
 }
-.logo em { color: var(--accent); font-style: normal; }
+.wordmark em { color: var(--fern); font-style: italic; }
 
-.search-wrap { flex: 1; max-width: 280px; position: relative; }
-.search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--text-faint); font-size: 11px; pointer-events: none; }
+.nav-filters {
+  display: flex; align-items: center; gap: 4px; flex: 1; flex-wrap: wrap;
+}
+.domain-pill {
+  padding: 4px 12px;
+  border-radius: var(--r-btn);
+  font-size: 13px; font-weight: 400;
+  color: var(--slate); background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer; transition: all 0.15s;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.domain-pill:hover { background: var(--cloud); color: var(--charcoal); }
+.domain-pill.active {
+  background: var(--charcoal); color: var(--paper);
+  border-color: var(--charcoal);
+}
+
+.nav-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+
+.search-wrap { position: relative; }
 .search-input {
-  width: 100%; padding: 6px 10px 6px 27px;
-  background: rgba(255,255,255,0.55); border: 1px solid rgba(0,0,0,.1);
-  border-radius: 20px; font-size: 13px; color: var(--text); outline: none;
-  transition: background 0.15s, border-color 0.15s;
+  padding: 6px 14px 6px 32px;
+  background: var(--cloud); border: 1px solid var(--mist);
+  border-radius: var(--r-input); font-size: 13px; font-family: var(--font-ui);
+  color: var(--charcoal); outline: none; width: 160px;
+  transition: width 0.2s, border-color 0.15s, background 0.15s;
+  letter-spacing: 0.02em;
 }
-.search-input::placeholder { color: var(--text-faint); }
-.search-input:focus { background: rgba(255,255,255,.8); border-color: rgba(0,0,0,.18); }
-
-.header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.node-count { font-size: 12px; color: var(--text-faint); }
+.search-input::placeholder { color: var(--ash); }
+.search-input:focus { width: 200px; background: var(--paper); border-color: var(--mist); }
+.search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--ash); font-size: 12px; pointer-events: none; }
 
 .add-btn {
-  display: flex; align-items: center; gap: 4px;
-  padding: 6px 13px; background: var(--text); color: #FDFAF3;
-  border: none; border-radius: 20px; font-size: 13px; font-weight: 500;
-  cursor: pointer; transition: opacity 0.15s;
+  padding: 7px 16px;
+  background: var(--charcoal); color: var(--paper);
+  border: none; border-radius: var(--r-btn);
+  font-size: 13px; font-weight: 500; font-family: var(--font-ui);
+  cursor: pointer; white-space: nowrap; letter-spacing: 0.02em;
+  transition: opacity 0.15s;
 }
 .add-btn:hover { opacity: 0.8; }
 
-/* ── Layout ── */
-.layout { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
+/* ── LAYOUT ── */
+.layout { max-width: 960px; margin: 0 auto; padding: 40px 20px 100px; }
 
-/* ── Radar ── */
-.radar-row {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 28px; flex-wrap: wrap;
+/* ── RADAR ── */
+.radar {
+  margin-bottom: 48px; padding: 20px 24px;
+  background: var(--paper); border: 1px solid var(--mist);
+  border-radius: var(--r-card); box-shadow: var(--shadow);
 }
-.radar-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; white-space: nowrap; }
+.radar-head {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+}
+.radar-label {
+  font-size: 12px; font-weight: 600; color: var(--slate);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.shimmer-line {
+  flex: 1; height: 1px;
+  background: var(--gradient-ash);
+  background-size: 400% 100%;
+  animation: shimmer 3s linear infinite;
+}
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+.radar-chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .radar-chip {
   display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 12px; background: var(--film-light); border: 1px solid #EAC9B4;
-  border-radius: 20px; font-size: 12px; color: var(--film); font-weight: 500;
-  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+  padding: 6px 14px; background: var(--snow);
+  border: 1px solid var(--mist); border-radius: var(--r-btn);
+  font-size: 12px; color: var(--slate); cursor: pointer;
+  transition: all 0.15s; letter-spacing: 0.02em;
 }
-.radar-chip:hover { background: #FAE0CE; }
+.radar-chip:hover { background: var(--paper); border-color: var(--fog); color: var(--charcoal); box-shadow: var(--shadow); }
+.radar-chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fern); flex-shrink: 0; }
 
-/* ── Section ── */
-.section { margin-bottom: 28px; }
-.section-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
-.section-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; }
-.section-count { font-size: 11px; color: var(--text-faint); }
+/* ── SECTION ── */
+.section { margin-bottom: 40px; }
+.section-head {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--font-serif); font-style: italic;
+  font-size: 18px; color: var(--charcoal); letter-spacing: normal;
+}
+.section-count {
+  font-size: 12px; color: var(--ash); letter-spacing: 0.02em;
+}
+.section-line { flex: 1; height: 1px; background: var(--mist); }
 
-/* ── Card grid ── */
+/* ── CARD GRID ── */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
 }
 
-/* ── Sticky note card ── */
+/* ── NODE CARD ── */
 .node-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--card-shadow);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition: box-shadow 0.18s, transform 0.18s;
+  background: var(--paper);
+  border: 1px solid var(--mist);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow);
+  padding: 18px 18px 14px;
+  min-height: 170px;
   display: flex; flex-direction: column;
-  padding: 14px 14px 12px;
-  min-height: 160px;
-  position: relative;
-  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s;
+  position: relative; overflow: hidden;
 }
 .node-card:hover {
-  box-shadow: var(--card-hover);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: rgba(0,0,0,0.12) 0px 16px 24px -4px, rgba(0,0,0,0.08) 0px 6px 10px -4px;
 }
-
-/* film accent strip */
-.node-card.can-film::after {
+.node-card.can-film {
+  background: linear-gradient(160deg, var(--paper) 70%, #f5faf6 100%);
+}
+.node-card.can-film::before {
   content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--film);
-  border-radius: var(--radius) var(--radius) 0 0;
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--fern) 40%, transparent);
+  opacity: 0.6;
 }
 
-/* theme tag line at top */
-.card-theme {
-  font-size: 10px; font-weight: 600; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: 0.5px;
-  margin-bottom: 8px;
+.card-domain {
+  font-size: 11px; font-weight: 500; color: var(--ash);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 10px;
   display: flex; align-items: center; gap: 5px;
 }
-.card-theme-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--accent); flex-shrink: 0;
+.card-domain-dot {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--fern); opacity: 0.6;
 }
 
-/* trigger text */
 .card-trigger {
-  font-size: 13px; line-height: 1.6; color: var(--text);
+  font-size: 13px; line-height: 1.6; color: var(--charcoal);
   flex: 1;
   display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;
   overflow: hidden;
+  letter-spacing: 0.02em;
 }
 
-/* card footer */
 .card-footer {
-  margin-top: 12px; padding-top: 10px;
-  border-top: 1px solid rgba(0,0,0,.06);
+  margin-top: 14px; padding-top: 10px;
+  border-top: 1px solid var(--cloud);
   display: flex; align-items: center; justify-content: space-between;
-  gap: 6px;
 }
 
-/* completeness dots */
-.completeness {
-  display: flex; gap: 4px; align-items: center;
-}
+/* completeness indicators */
+.c-dots { display: flex; gap: 3px; align-items: center; }
 .c-dot {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 20px; height: 20px; border-radius: 50%;
-  font-size: 9px; font-weight: 700; letter-spacing: 0;
-  background: var(--tag-bg); color: var(--text-faint);
-  border: 1px solid rgba(0,0,0,.07);
-  transition: background 0.15s;
+  width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; font-weight: 600; letter-spacing: 0;
+  background: var(--cloud); color: var(--ash);
+  border: 1px solid var(--pebble);
+  transition: all 0.15s;
 }
-.c-dot.has {
-  background: var(--accent-light); color: var(--accent);
-  border-color: #C8E0D0;
+.c-dot.has { background: var(--mint); color: var(--fern); border-color: #c2e0c8; }
+
+/* right badges */
+.card-right { display: flex; align-items: center; gap: 6px; }
+.motif-badge {
+  font-size: 10px; color: var(--ash); display: flex; align-items: center; gap: 3px;
 }
-
-/* right side badges */
-.card-badges { display: flex; align-items: center; gap: 5px; }
-
-.motif-pill {
-  font-size: 10px; color: var(--text-faint);
-  display: flex; align-items: center; gap: 3px;
+.motif-badge.has { color: var(--fern); }
+.film-badge {
+  font-size: 10px; font-weight: 500; color: var(--fern);
+  letter-spacing: 0.02em;
 }
-.motif-pill.has-motif { color: var(--accent); }
+.card-date { font-size: 10px; color: var(--pebble); letter-spacing: 0.02em; }
 
-.film-pill {
-  font-size: 10px; font-weight: 600;
-  color: var(--film); background: var(--film-light);
-  padding: 2px 6px; border-radius: 10px;
-  border: 1px solid #EAC9B4;
-}
-
-.card-date { font-size: 10px; color: var(--text-faint); }
-
-/* ── Detail modal ── */
+/* ── DETAIL OVERLAY ── */
 .overlay {
   display: none; position: fixed; inset: 0;
-  background: rgba(30,24,18,.45); backdrop-filter: blur(4px);
+  background: rgba(24,25,27,0.4); backdrop-filter: blur(6px);
   z-index: 200; align-items: center; justify-content: center; padding: 20px;
 }
 .overlay.open { display: flex; }
 
-.detail-panel {
-  background: #FDFAF3; border-radius: 10px; width: 100%; max-width: 540px;
-  max-height: 88vh; overflow-y: auto;
-  box-shadow: 0 24px 64px rgba(0,0,0,.22);
-  border: 1px solid rgba(0,0,0,.07);
+.detail {
+  background: var(--paper); border-radius: var(--r-card);
+  width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto;
+  box-shadow: rgba(0,0,0,0.15) 0px 24px 48px -8px;
+  border: 1px solid var(--mist);
 }
 
-.dp-head {
-  padding: 20px 20px 0;
-  display: flex; align-items: flex-start; gap: 12px;
+.detail-head { padding: 22px 22px 0; }
+.detail-badges { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.badge {
+  padding: 3px 10px; border-radius: var(--r-btn);
+  font-size: 11px; font-weight: 500; letter-spacing: 0.02em;
+  border: 1px solid var(--mist); color: var(--slate); background: var(--snow);
 }
-.dp-meta { flex: 1; }
+.badge.domain { background: var(--mint); color: var(--fern); border-color: #c2e0c8; }
+.badge.film { color: var(--fern); background: var(--snow); border-color: #c2e0c8; }
+.badge.motif { font-size: 10px; }
 
-.dp-badges {
-  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;
+.detail-trigger {
+  font-size: 16px; font-weight: 500; line-height: 1.5;
+  color: var(--charcoal); margin-bottom: 5px; letter-spacing: 0.01em;
 }
-.dp-theme {
-  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-  color: var(--accent); background: var(--accent-light);
-  padding: 2px 7px; border-radius: 10px; border: 1px solid #C8E0D0;
+.detail-date { font-size: 11px; color: var(--ash); margin-bottom: 2px; }
+.detail-close-row { display: flex; justify-content: flex-end; padding: 12px 22px 0; }
+.detail-close {
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  background: var(--cloud); border: none; border-radius: 50%;
+  cursor: pointer; font-size: 12px; color: var(--slate);
+  transition: background 0.15s;
 }
-.dp-motif {
-  font-size: 10px; color: var(--text-muted); background: var(--tag-bg);
-  padding: 2px 7px; border-radius: 10px;
-}
-.dp-film {
-  font-size: 10px; font-weight: 600; color: var(--film); background: var(--film-light);
-  padding: 2px 7px; border-radius: 10px; border: 1px solid #EAC9B4;
-}
+.detail-close:hover { background: var(--pebble); }
 
-.dp-trigger {
-  font-size: 15px; font-weight: 600; color: var(--text);
-  line-height: 1.55; margin-bottom: 4px;
-}
-.dp-date { font-size: 11px; color: var(--text-faint); }
-
-.dp-close {
-  flex-shrink: 0; width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--tag-bg); border: none; border-radius: 50%;
-  cursor: pointer; font-size: 13px; color: var(--text-muted);
-  margin-top: -2px;
-}
-
-.dp-body { padding: 16px 20px 20px; }
-
-.dp-section { margin-bottom: 16px; }
-.dp-section:last-child { margin-bottom: 0; }
-
-.dp-label {
-  font-size: 10px; font-weight: 700; color: var(--text-faint);
-  text-transform: uppercase; letter-spacing: 0.6px;
+.detail-body { padding: 16px 22px 22px; }
+.detail-section { margin-bottom: 18px; }
+.detail-section:last-child { margin-bottom: 0; }
+.detail-label {
+  font-size: 10px; font-weight: 600; color: var(--ash);
+  text-transform: uppercase; letter-spacing: 0.07em;
   margin-bottom: 6px; display: flex; align-items: center; gap: 5px;
 }
-
-.dp-content { font-size: 13px; color: var(--text); line-height: 1.65; }
-.dp-content.judgment { font-weight: 600; font-size: 14px; }
-
-.dp-ai-note {
-  margin-top: 8px; background: var(--ai-bg); border-left: 3px solid var(--ai-border);
-  padding: 9px 11px; border-radius: 0 4px 4px 0; font-size: 12px; color: var(--ai-text);
-  line-height: 1.6;
+.detail-text {
+  font-size: 13px; line-height: 1.65; color: var(--charcoal);
+  letter-spacing: 0.01em;
 }
-.dp-ai-tag {
-  display: inline-block; font-size: 9px; font-weight: 700;
-  background: #C8D9F0; color: var(--ai-border); border-radius: 3px;
-  padding: 1px 4px; margin-right: 4px; letter-spacing: 0.2px;
-  vertical-align: middle;
-}
+.detail-text.judgment { font-size: 14px; font-weight: 500; }
 
-.dp-method-user {
-  background: var(--accent-light); border-left: 3px solid var(--accent);
-  padding: 9px 11px; border-radius: 0 4px 4px 0; font-size: 13px;
-  margin-bottom: 6px;
+.ai-block {
+  margin-top: 8px; padding: 10px 12px;
+  background: var(--snow); border: 1px solid var(--mist);
+  border-left: 2px solid var(--ash); border-radius: 0 8px 8px 0;
+  font-size: 12px; line-height: 1.6; color: var(--slate); letter-spacing: 0.01em;
 }
-.dp-method-ai {
-  background: var(--ai-bg); border-left: 3px solid var(--ai-border);
-  padding: 9px 11px; border-radius: 0 4px 4px 0; font-size: 12px; color: var(--ai-text);
-  margin-top: 6px; line-height: 1.6;
+.ai-tag {
+  display: inline-block; font-size: 9px; font-weight: 600;
+  background: var(--cloud); color: var(--ash);
+  border-radius: 4px; padding: 1px 5px; margin-right: 5px;
+  vertical-align: middle; letter-spacing: 0.03em;
 }
 
-.dp-completeness {
-  display: flex; gap: 8px; align-items: center;
-  padding: 10px 0; border-top: 1px solid rgba(0,0,0,.06); margin-top: 4px;
+.method-user {
+  padding: 10px 12px; background: var(--mint);
+  border-radius: 8px; font-size: 13px; line-height: 1.6;
+  border: 1px solid #c2e0c8; margin-bottom: 6px;
 }
-.dp-c-item {
-  display: flex; align-items: center; gap: 4px;
-  font-size: 11px; color: var(--text-faint);
+.method-ai {
+  padding: 10px 12px; background: var(--snow);
+  border: 1px solid var(--mist); border-left: 2px solid var(--ash);
+  border-radius: 0 8px 8px 0; font-size: 12px; line-height: 1.6;
+  color: var(--slate); margin-top: 6px; letter-spacing: 0.01em;
 }
-.dp-c-item.has { color: var(--accent); }
-.dp-c-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.7; }
 
-/* ── Add modal ── */
+.detail-completeness {
+  display: flex; gap: 16px; align-items: center;
+  padding-top: 14px; margin-top: 4px;
+  border-top: 1px solid var(--cloud);
+}
+.dc-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ash); }
+.dc-item.has { color: var(--fern); }
+.dc-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.7; }
+
+/* ── ADD OVERLAY ── */
 .add-overlay {
   display: none; position: fixed; inset: 0;
-  background: rgba(30,24,18,.45); backdrop-filter: blur(4px);
+  background: rgba(24,25,27,0.4); backdrop-filter: blur(6px);
   z-index: 300; align-items: center; justify-content: center; padding: 20px;
 }
 .add-overlay.open { display: flex; }
-
 .add-panel {
-  background: #FDFAF3; border-radius: 10px; width: 100%; max-width: 520px;
-  max-height: 90vh; overflow-y: auto;
-  box-shadow: 0 24px 64px rgba(0,0,0,.22); border: 1px solid rgba(0,0,0,.07);
+  background: var(--paper); border-radius: var(--r-card);
+  width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+  box-shadow: rgba(0,0,0,0.15) 0px 24px 48px -8px;
+  border: 1px solid var(--mist);
 }
-.add-head { padding: 18px 20px 0; display: flex; align-items: center; justify-content: space-between; }
-.add-title { font-size: 14px; font-weight: 600; }
+.add-head {
+  padding: 20px 22px 0; display: flex; align-items: center; justify-content: space-between;
+}
+.add-title {
+  font-family: var(--font-serif); font-style: italic;
+  font-size: 18px; color: var(--charcoal); letter-spacing: normal;
+}
 .add-close {
   width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-  background: var(--tag-bg); border: none; border-radius: 50%;
-  cursor: pointer; font-size: 13px; color: var(--text-muted);
+  background: var(--cloud); border: none; border-radius: 50%;
+  cursor: pointer; font-size: 12px; color: var(--slate);
 }
-.add-body { padding: 16px 20px; }
+.add-body { padding: 16px 22px; }
 .field { margin-bottom: 14px; }
 .field label {
-  display: block; font-size: 10px; font-weight: 700; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;
+  display: block; font-size: 10px; font-weight: 600; color: var(--ash);
+  text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 5px;
 }
-.field textarea, .field input {
-  width: 100%; padding: 9px 11px; background: rgba(255,255,255,.65);
-  border: 1px solid rgba(0,0,0,.1); border-radius: 5px;
-  font-size: 13px; color: var(--text); font-family: inherit;
-  resize: vertical; outline: none; line-height: 1.55; transition: border-color 0.15s;
+.field textarea, .field input, .field select {
+  width: 100%; padding: 9px 14px;
+  background: var(--snow); border: 1px solid var(--mist);
+  border-radius: var(--r-input); font-size: 13px; font-family: var(--font-ui);
+  color: var(--charcoal); outline: none; resize: vertical; line-height: 1.55;
+  transition: border-color 0.15s, background 0.15s; letter-spacing: 0.02em;
 }
-.field textarea:focus, .field input:focus { border-color: rgba(0,0,0,.2); background: rgba(255,255,255,.9); }
+.field textarea:focus, .field input:focus, .field select:focus {
+  border-color: var(--fog); background: var(--paper);
+}
 .field textarea { min-height: 64px; }
-.field-hint { font-size: 10px; color: var(--text-faint); margin-top: 3px; }
-.add-footer { padding: 0 20px 18px; display: flex; gap: 8px; justify-content: flex-end; }
-.btn-cancel {
-  padding: 7px 14px; background: var(--tag-bg); border: none; border-radius: 20px;
-  font-size: 13px; cursor: pointer; color: var(--text-muted);
+.field-hint { font-size: 10px; color: var(--ash); margin-top: 3px; letter-spacing: 0.02em; }
+.add-footer { padding: 0 22px 20px; display: flex; gap: 8px; justify-content: flex-end; }
+.btn-ghost {
+  padding: 8px 16px; background: transparent; border: 1px solid var(--mist);
+  border-radius: var(--r-btn); font-size: 13px; font-family: var(--font-ui);
+  cursor: pointer; color: var(--slate); letter-spacing: 0.02em;
+  transition: background 0.15s;
 }
-.btn-save {
-  padding: 7px 16px; background: var(--text); color: #FDFAF3; border: none;
-  border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer;
+.btn-ghost:hover { background: var(--cloud); }
+.btn-primary {
+  padding: 8px 18px; background: var(--charcoal); color: var(--paper);
+  border: none; border-radius: var(--r-btn);
+  font-size: 13px; font-weight: 500; font-family: var(--font-ui);
+  cursor: pointer; letter-spacing: 0.02em; transition: opacity 0.15s;
 }
+.btn-primary:hover { opacity: 0.8; }
 
-/* ── Empty ── */
-.empty {
-  grid-column: 1/-1; text-align: center;
-  padding: 48px 0; color: var(--text-faint); font-size: 13px;
-}
+/* ── STATES ── */
+.empty { grid-column: 1/-1; text-align: center; padding: 48px 0; color: var(--ash); font-size: 13px; }
 .welcome {
-  background: rgba(255,255,255,.4); border: 1px dashed rgba(0,0,0,.12);
-  border-radius: var(--radius); padding: 40px 24px; text-align: center;
-  grid-column: 1/-1;
+  grid-column: 1/-1; text-align: center; padding: 56px 32px;
+  background: var(--paper); border: 1px solid var(--mist);
+  border-radius: var(--r-card); box-shadow: var(--shadow);
 }
-.welcome h2 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-.welcome p { color: var(--text-muted); font-size: 13px; line-height: 1.7; }
+.welcome-logo { font-family: var(--font-serif); font-style: italic; font-size: 28px; color: var(--charcoal); margin-bottom: 10px; }
+.welcome-logo em { color: var(--fern); }
+.welcome p { color: var(--slate); font-size: 13px; line-height: 1.7; max-width: 320px; margin: 0 auto; }
+
+/* count badge in nav */
+.count-badge { font-size: 12px; color: var(--ash); letter-spacing: 0.02em; }
 </style>
 </head>
 <body>
 
-<header class="header">
-  <div class="logo">Mental <em>Garden</em></div>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" class="search-input" id="searchInput" placeholder="搜索…">
-  </div>
-  <div class="header-right">
-    <span class="node-count" id="nodeCount"></span>
-    <button class="add-btn" onclick="openAdd()">＋ 记录</button>
-  </div>
-</header>
+<div class="nav-wrap">
+  <nav class="nav">
+    <div class="wordmark">Mental <em>Garden</em></div>
+    <div class="nav-filters" id="domainFilters">
+      <button class="domain-pill active" data-domain="">全部</button>
+      <button class="domain-pill" data-domain="个人成长">个人成长</button>
+      <button class="domain-pill" data-domain="表达">表达</button>
+      <button class="domain-pill" data-domain="AI">AI</button>
+      <button class="domain-pill" data-domain="学习">学习</button>
+    </div>
+    <div class="nav-right">
+      <div class="search-wrap">
+        <span class="search-icon">○</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="搜索…">
+      </div>
+      <span class="count-badge" id="nodeCount"></span>
+      <button class="add-btn" onclick="openAdd()">＋ 记录</button>
+    </div>
+  </nav>
+</div>
 
 <div class="layout" id="app">
-  <div style="color:var(--text-faint);font-size:13px;">加载中…</div>
+  <div style="color:var(--ash);font-size:13px;">加载中…</div>
 </div>
 
 <!-- Detail overlay -->
-<div class="overlay" id="detailOverlay" onclick="closeDetail(event)">
-  <div class="detail-panel" id="detailPanel"></div>
+<div class="overlay" id="detailOverlay" onclick="handleOverlayClick(event)">
+  <div class="detail" id="detailPanel"></div>
 </div>
 
 <!-- Add overlay -->
@@ -401,41 +454,44 @@ body {
         <textarea id="f-trigger" placeholder="让你停下来的那句话、那件事…" rows="3"></textarea>
       </div>
       <div class="field">
+        <label>领域</label>
+        <select id="f-domain">
+          <option value="">选择领域…</option>
+          <option value="个人成长">个人成长</option>
+          <option value="表达">表达</option>
+          <option value="AI">AI</option>
+          <option value="学习">学习</option>
+        </select>
+      </div>
+      <div class="field">
         <label>案例</label>
         <textarea id="f-case" placeholder="谁做了什么，发生了什么…"></textarea>
       </div>
       <div class="field">
         <label>判断</label>
-        <textarea id="f-judgment" placeholder="你从中得出了什么结论？"></textarea>
+        <textarea id="f-judgment" placeholder="你从中得出了什么？"></textarea>
       </div>
       <div class="field">
         <label>方法</label>
         <textarea id="f-method" placeholder="下次怎么用？"></textarea>
       </div>
       <div class="field">
-        <label>主题</label>
-        <input type="text" id="f-themes" placeholder="AI应用、老板演讲…">
+        <label>主题标签</label>
+        <input type="text" id="f-themes" placeholder="老板演讲、AI应用…">
         <div class="field-hint">逗号分隔</div>
       </div>
     </div>
     <div class="add-footer">
-      <button class="btn-cancel" onclick="closeAdd()">取消</button>
-      <button class="btn-save" onclick="saveNode()">存入</button>
+      <button class="btn-ghost" onclick="closeAdd()">取消</button>
+      <button class="btn-primary" onclick="saveNode()">存入花园</button>
     </div>
   </div>
 </div>
 
 <script>
 let allNodes = [];
+let activeDomain = '';
 let searchQuery = '';
-
-// theme → color mapping (consistent per theme name)
-const THEME_COLORS = {};
-const PALETTE = ['#4A7C59','#7C4A6B','#6B7C4A','#4A5E7C','#7C6B4A','#4A7C72','#7C4A4A'];
-function themeColor(t) {
-  if (!THEME_COLORS[t]) THEME_COLORS[t] = PALETTE[Object.keys(THEME_COLORS).length % PALETTE.length];
-  return THEME_COLORS[t];
-}
 
 async function init() {
   try {
@@ -443,26 +499,40 @@ async function init() {
     const d = await r.json();
     allNodes = d.nodes || [];
   } catch(e) { allNodes = []; }
+
+  // domain filter buttons
+  document.getElementById('domainFilters').addEventListener('click', e => {
+    const btn = e.target.closest('.domain-pill');
+    if (!btn) return;
+    activeDomain = btn.dataset.domain;
+    document.querySelectorAll('.domain-pill').forEach(b => b.classList.toggle('active', b === btn));
+    render();
+  });
+
   render();
 }
 
 function canFilm(n) { return n.judgment && (n.case || n.method || (n.method_ai && n.method_ai.length)); }
-function has(n, f) { return !!(n[f] && n[f].trim()); }
+function hasPart(n, f) { return !!(n[f] && n[f].trim()); }
 
-function matchSearch(n, q) {
-  if (!q) return true;
-  const t = [n.trigger, n.case, n.judgment, n.method, ...(n.themes||[])].join(' ').toLowerCase();
-  return q.toLowerCase().split(/\s+/).every(w => t.includes(w));
+function filtered() {
+  return allNodes.filter(n => {
+    if (activeDomain && n.domain !== activeDomain) return false;
+    if (searchQuery) {
+      const t = [n.trigger,n.case,n.judgment,n.method,...(n.themes||[])].join(' ').toLowerCase();
+      if (!searchQuery.toLowerCase().split(/\s+/).every(w => t.includes(w))) return false;
+    }
+    return true;
+  });
 }
 
 function render() {
   const app = document.getElementById('app');
-  const q = searchQuery.trim();
-  const nodes = allNodes.filter(n => matchSearch(n, q));
+  const nodes = filtered();
   document.getElementById('nodeCount').textContent = allNodes.length + ' 个';
 
   if (allNodes.length === 0) {
-    app.innerHTML = `<div class="card-grid"><div class="welcome"><h2>🌱 花园还是空的</h2><p>点右上角「记录」，把今天让你停下来的瞬间存进来。</p></div></div>`;
+    app.innerHTML = `<div class="card-grid"><div class="welcome"><div class="welcome-logo">Mental <em>Garden</em></div><p>点右上角「记录」，把今天让你停下来的瞬间存进来。</p></div></div>`;
     return;
   }
 
@@ -470,145 +540,119 @@ function render() {
 
   // radar
   const filmable = nodes.filter(canFilm);
-  if (!q && filmable.length) {
-    html += `<div class="radar-row"><span class="radar-label">🎬 可以拍</span>`;
+  if (filmable.length) {
+    html += `<div class="radar"><div class="radar-head"><span class="radar-label">可以拍了</span><div class="shimmer-line"></div></div><div class="radar-chips">`;
     filmable.forEach(n => {
-      html += `<span class="radar-chip" onclick="openDetailById('${n.id}')">${esc(short(n.trigger, 18))}</span>`;
-    });
-    html += `</div>`;
-  }
-
-  // group by theme
-  const themeMap = {};
-  nodes.forEach(n => {
-    const themes = n.themes && n.themes.length ? n.themes : ['其他'];
-    themes.forEach(t => {
-      if (!themeMap[t]) themeMap[t] = [];
-      themeMap[t].push(n);
-    });
-  });
-
-  const rendered = new Set();
-  Object.keys(themeMap).forEach(theme => {
-    html += `<div class="section">
-      <div class="section-head">
-        <span class="section-title" style="color:${themeColor(theme)}">${esc(theme)}</span>
-        <span class="section-count">${themeMap[theme].length}</span>
-      </div>
-      <div class="card-grid">`;
-    themeMap[theme].forEach(n => {
-      if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); }
+      html += `<span class="radar-chip" onclick="openDetail('${n.id}')"><span class="radar-chip-dot"></span>${esc(short(n.trigger, 20))}</span>`;
     });
     html += `</div></div>`;
-  });
-
-  if (!q) {
-    const unthemed = nodes.filter(n => !n.themes || !n.themes.length);
-    if (unthemed.length) {
-      html += `<div class="section"><div class="section-head"><span class="section-title">其他</span></div><div class="card-grid">`;
-      unthemed.forEach(n => { if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); } });
-      html += `</div></div>`;
-    }
   }
 
-  if (q && nodes.length === 0) html += `<div class="card-grid"><div class="empty">没有匹配的节点</div></div>`;
+  // group by theme within domain
+  const themeMap = {};
+  nodes.forEach(n => {
+    const ts = n.themes && n.themes.length ? n.themes : ['其他'];
+    ts.forEach(t => { if (!themeMap[t]) themeMap[t] = []; themeMap[t].push(n); });
+  });
+
+  if (nodes.length === 0) {
+    html += `<div class="card-grid"><div class="empty">没有匹配的节点</div></div>`;
+  } else {
+    const rendered = new Set();
+    Object.keys(themeMap).forEach(theme => {
+      html += `<div class="section"><div class="section-head">
+        <span class="section-title">${esc(theme)}</span>
+        <span class="section-count">${themeMap[theme].length}</span>
+        <div class="section-line"></div>
+      </div><div class="card-grid">`;
+      themeMap[theme].forEach(n => {
+        if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); }
+      });
+      html += `</div></div>`;
+    });
+  }
 
   app.innerHTML = html;
 }
 
 function cardHtml(n) {
   const film = canFilm(n);
-  const hasJ = has(n,'judgment'), hasC = has(n,'case'), hasM = has(n,'method') || (n.method_ai && n.method_ai.length);
-  const theme = n.themes && n.themes[0] ? n.themes[0] : '';
-  const color = theme ? themeColor(theme) : 'var(--text-muted)';
+  const hasJ = hasPart(n,'judgment'), hasC = hasPart(n,'case');
+  const hasM = hasPart(n,'method') || (n.method_ai && n.method_ai.length);
+  const domain = n.domain || '';
 
   const dots = [
-    {label:'判', has:hasJ}, {label:'案', has:hasC}, {label:'方', has:hasM}
-  ].map(d => `<span class="c-dot${d.has?' has':''}" title="${d.label}">${d.label}</span>`).join('');
+    {l:'判',has:hasJ},{l:'案',has:hasC},{l:'方',has:hasM}
+  ].map(d=>`<span class="c-dot${d.has?' has':''}" title="${d.l}">${d.l}</span>`).join('');
 
   const motif = n.motif
-    ? `<span class="motif-pill has-motif">🌿 ${esc(short(n.motif,10))}</span>`
-    : `<span class="motif-pill">— 独立</span>`;
+    ? `<span class="motif-badge has" title="${esc(n.motif)}">🌿</span>`
+    : '';
+  const filmBadge = film ? `<span class="film-badge">🎬</span>` : '';
 
-  const filmPill = film ? `<span class="film-pill">🎬</span>` : '';
-
-  return `<div class="node-card${film?' can-film':''}" id="node-${n.id}" onclick="openDetailById('${n.id}')">
-    <div class="card-theme"><span class="card-theme-dot" style="background:${color}"></span>${esc(theme)}</div>
+  return `<div class="node-card${film?' can-film':''}" id="node-${n.id}" onclick="openDetail('${n.id}')">
+    <div class="card-domain"><span class="card-domain-dot"></span>${esc(domain)}</div>
     <div class="card-trigger">${esc(n.trigger)}</div>
     <div class="card-footer">
-      <div class="completeness">${dots}</div>
-      <div class="card-badges">${motif}${filmPill}<span class="card-date">${(n.date||'').slice(5)}</span></div>
+      <div class="c-dots">${dots}</div>
+      <div class="card-right">${motif}${filmBadge}<span class="card-date">${(n.date||'').slice(5)}</span></div>
     </div>
   </div>`;
 }
 
-function openDetailById(id) {
-  const n = allNodes.find(x => x.id === id);
+function openDetail(id) {
+  const n = allNodes.find(x=>x.id===id);
   if (!n) return;
 
   const film = canFilm(n);
-  const hasJ = has(n,'judgment'), hasC = has(n,'case'), hasM = has(n,'method');
+  const hasJ = hasPart(n,'judgment'), hasC = hasPart(n,'case'), hasM = hasPart(n,'method');
   const hasCAI = !!(n.case_note && n.case_note.trim());
   const hasMAI = n.method_ai && n.method_ai.length;
-  const theme = n.themes && n.themes[0] ? n.themes[0] : '';
+
+  const domainBadge = n.domain ? `<span class="badge domain">${esc(n.domain)}</span>` : '';
+  const motifBadge = n.motif ? `<span class="badge motif">🌿 ${esc(short(n.motif, 16))}</span>` : '';
+  const filmBadge = film ? `<span class="badge film">🎬 可以拍</span>` : '';
 
   let body = '';
-
-  // case
   if (hasC || hasCAI) {
-    body += `<div class="dp-section"><div class="dp-label">📍 案例</div>`;
-    if (hasC) body += `<div class="dp-content">${esc(n.case)}</div>`;
-    if (hasCAI) body += `<div class="dp-ai-note"><span class="dp-ai-tag">AI 核实</span>${esc(n.case_note)}</div>`;
+    body += `<div class="detail-section"><div class="detail-label">案例</div>`;
+    if (hasC) body += `<div class="detail-text">${esc(n.case)}</div>`;
+    if (hasCAI) body += `<div class="ai-block"><span class="ai-tag">AI 核实</span>${esc(n.case_note)}</div>`;
     body += `</div>`;
   }
-
-  // judgment
-  if (hasJ) {
-    body += `<div class="dp-section"><div class="dp-label">💡 判断</div><div class="dp-content judgment">${esc(n.judgment)}</div></div>`;
-  }
-
-  // method
+  if (hasJ) body += `<div class="detail-section"><div class="detail-label">判断</div><div class="detail-text judgment">${esc(n.judgment)}</div></div>`;
   if (hasM || hasMAI) {
-    body += `<div class="dp-section"><div class="dp-label">🔧 方法</div>`;
-    if (hasM) body += `<div class="dp-method-user">${esc(n.method)}</div>`;
-    if (hasMAI) n.method_ai.forEach(m => {
-      body += `<div class="dp-method-ai"><span class="dp-ai-tag">AI</span>${esc(m)}</div>`;
-    });
+    body += `<div class="detail-section"><div class="detail-label">方法</div>`;
+    if (hasM) body += `<div class="method-user">${esc(n.method)}</div>`;
+    if (hasMAI) n.method_ai.forEach(m => { body += `<div class="method-ai"><span class="ai-tag">AI</span>${esc(m)}</div>`; });
     body += `</div>`;
   }
-
-  // completeness footer
-  body += `<div class="dp-completeness">
-    <span class="dp-c-item${hasJ?' has':''}"><span class="dp-c-dot"></span>判断</span>
-    <span class="dp-c-item${hasC?' has':''}"><span class="dp-c-dot"></span>案例</span>
-    <span class="dp-c-item${(hasM||hasMAI)?' has':''}"><span class="dp-c-dot"></span>方法</span>
+  body += `<div class="detail-completeness">
+    <span class="dc-item${hasJ?' has':''}"><span class="dc-dot"></span>判断</span>
+    <span class="dc-item${hasC?' has':''}"><span class="dc-dot"></span>案例</span>
+    <span class="dc-item${(hasM||hasMAI)?' has':''}"><span class="dc-dot"></span>方法</span>
   </div>`;
 
-  const themeBadge = theme ? `<span class="dp-theme">${esc(theme)}</span>` : '';
-  const motifBadge = n.motif ? `<span class="dp-motif">🌿 ${esc(n.motif)}</span>` : '';
-  const filmBadge = film ? `<span class="dp-film">🎬 可以拍</span>` : '';
-
   document.getElementById('detailPanel').innerHTML = `
-    <div class="dp-head">
-      <div class="dp-meta">
-        <div class="dp-badges">${themeBadge}${motifBadge}${filmBadge}</div>
-        <div class="dp-trigger">${esc(n.trigger)}</div>
-        <div class="dp-date">${n.date || ''}</div>
-      </div>
-      <button class="dp-close" onclick="closeDetailBtn()">✕</button>
+    <div class="detail-close-row"><button class="detail-close" onclick="closeDetail()">✕</button></div>
+    <div class="detail-head">
+      <div class="detail-badges">${domainBadge}${motifBadge}${filmBadge}</div>
+      <div class="detail-trigger">${esc(n.trigger)}</div>
+      <div class="detail-date">${n.date||''}</div>
     </div>
-    <div class="dp-body">${body}</div>`;
+    <div class="detail-body">${body}</div>`;
 
   document.getElementById('detailOverlay').classList.add('open');
 }
 
-function closeDetail(e) { if (e.target === document.getElementById('detailOverlay')) closeDetailBtn(); }
-function closeDetailBtn() { document.getElementById('detailOverlay').classList.remove('open'); }
+function handleOverlayClick(e) { if (e.target===document.getElementById('detailOverlay')) closeDetail(); }
+function closeDetail() { document.getElementById('detailOverlay').classList.remove('open'); }
 
 function openAdd() { document.getElementById('addOverlay').classList.add('open'); document.getElementById('f-trigger').focus(); }
 function closeAdd() {
   document.getElementById('addOverlay').classList.remove('open');
-  ['f-trigger','f-case','f-judgment','f-method','f-themes'].forEach(id => document.getElementById(id).value = '');
+  ['f-trigger','f-case','f-judgment','f-method','f-themes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-domain').value='';
 }
 
 function saveNode() {
@@ -618,26 +662,24 @@ function saveNode() {
   const themes = themesRaw ? themesRaw.split(/[,，]+/).map(t=>t.trim()).filter(Boolean) : [];
   const today = new Date().toISOString().slice(0,10);
   const node = {
-    id: String(allNodes.length + 1).padStart(3,'0'), date: today,
-    trigger,
+    id: String(allNodes.length+1).padStart(3,'0'), date: today, trigger,
     case: document.getElementById('f-case').value.trim(),
     judgment: document.getElementById('f-judgment').value.trim(),
     method: document.getElementById('f-method').value.trim(),
-    method_ai: [], themes, ai_reviewed: false, updatedAt: today
+    method_ai: [], themes,
+    domain: document.getElementById('f-domain').value,
+    motif: '', ai_reviewed: false, updatedAt: today
   };
   allNodes.unshift(node); closeAdd(); render();
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify({nodes:allNodes},null,2)],{type:'application/json'}));
   a.download = 'nodes.json'; a.click();
-  setTimeout(() => alert('nodes.json 已下载。替换 data/ 文件夹里的原文件，然后 git push。'), 200);
+  setTimeout(()=>alert('nodes.json 已下载。替换 data/ 文件夹里的原文件，然后 git push。'),200);
 }
 
 document.getElementById('searchInput').addEventListener('input', function(){ searchQuery=this.value; render(); });
 
-function esc(s) {
-  if (!s) return '';
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');
-}
+function esc(s) { if(!s)return''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>'); }
 function short(s,n) { return s&&s.length>n?s.slice(0,n)+'…':(s||''); }
 
 init();
