@@ -5,292 +5,422 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mental Garden</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg: #F5F1EB;
-    --surface: #FDFCFA;
-    --surface-hover: #F8F5F0;
-    --border: #E2DDD6;
-    --border-light: #EDE9E2;
-    --text: #1A1714;
-    --text-muted: #7A7068;
-    --text-faint: #B0A89E;
-    --accent: #4A7C59;
-    --accent-light: #EBF4EE;
-    --accent-muted: #6B9E7B;
-    --film: #C4622D;
-    --film-light: #FDF0E8;
-    --tag-bg: #EDE9E2;
-    --radius: 12px;
-    --radius-sm: 8px;
-  }
+:root {
+  --bg: #EDE8DF;
+  --bg-lines: rgba(0,0,0,.025);
+  --card: #FDFAF3;
+  --card-shadow: 0 1px 2px rgba(0,0,0,.07), 0 4px 10px rgba(0,0,0,.08), 3px 6px 16px rgba(0,0,0,.05);
+  --card-hover: 0 2px 4px rgba(0,0,0,.09), 0 8px 20px rgba(0,0,0,.11), 4px 10px 24px rgba(0,0,0,.07);
+  --border: rgba(0,0,0,.07);
+  --text: #1C1814;
+  --text-muted: #7A7068;
+  --text-faint: #B0A89E;
+  --accent: #4A7C59;
+  --accent-light: #EBF4EE;
+  --film: #C4622D;
+  --film-light: #FDF0E8;
+  --ai-bg: #EEF2FA;
+  --ai-text: #2D4A72;
+  --ai-border: #4A6FA5;
+  --tag-bg: #EDE8DF;
+  --radius: 6px;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", sans-serif;
-    font-size: 14px;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
+body {
+  background-color: var(--bg);
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, var(--bg-lines) 27px, var(--bg-lines) 28px);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
 
-  .header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    height: 56px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
+/* ── Header ── */
+.header {
+  background: rgba(237,232,223,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,0,0,.08);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-  .logo {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.3px;
-    white-space: nowrap;
-  }
-  .logo span { color: var(--accent); }
+.logo {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  color: var(--text);
+}
+.logo em { color: var(--accent); font-style: normal; }
 
-  .header-divider { width: 1px; height: 20px; background: var(--border); }
+.search-wrap { flex: 1; max-width: 280px; position: relative; }
+.search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: var(--text-faint); font-size: 11px; pointer-events: none; }
+.search-input {
+  width: 100%; padding: 6px 10px 6px 27px;
+  background: rgba(255,255,255,0.55); border: 1px solid rgba(0,0,0,.1);
+  border-radius: 20px; font-size: 13px; color: var(--text); outline: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+.search-input::placeholder { color: var(--text-faint); }
+.search-input:focus { background: rgba(255,255,255,.8); border-color: rgba(0,0,0,.18); }
 
-  .search-wrap { flex: 1; max-width: 320px; position: relative; }
-  .search-icon {
-    position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
-    color: var(--text-faint); font-size: 12px; pointer-events: none;
-  }
-  .search-input {
-    width: 100%; padding: 7px 12px 7px 30px; background: var(--bg);
-    border: 1px solid var(--border); border-radius: 20px; font-size: 13px;
-    color: var(--text); outline: none; transition: border-color 0.15s;
-  }
-  .search-input::placeholder { color: var(--text-faint); }
-  .search-input:focus { border-color: var(--accent-muted); }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.node-count { font-size: 12px; color: var(--text-faint); }
 
-  .header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-  .node-count { font-size: 12px; color: var(--text-faint); }
+.add-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 6px 13px; background: var(--text); color: #FDFAF3;
+  border: none; border-radius: 20px; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.add-btn:hover { opacity: 0.8; }
 
-  .add-btn {
-    display: flex; align-items: center; gap: 5px;
-    padding: 6px 14px; background: var(--accent); color: white;
-    border: none; border-radius: 20px; font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: background 0.15s;
-  }
-  .add-btn:hover { background: #3d6b4a; }
+/* ── Layout ── */
+.layout { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
 
-  .layout { max-width: 800px; margin: 0 auto; padding: 32px 24px 80px; }
+/* ── Radar ── */
+.radar-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 28px; flex-wrap: wrap;
+}
+.radar-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; white-space: nowrap; }
+.radar-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; background: var(--film-light); border: 1px solid #EAC9B4;
+  border-radius: 20px; font-size: 12px; color: var(--film); font-weight: 500;
+  cursor: pointer; transition: background 0.15s; white-space: nowrap;
+}
+.radar-chip:hover { background: #FAE0CE; }
 
-  .section-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
-  .section-title { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
-  .section-sub { font-size: 12px; color: var(--text-faint); }
+/* ── Section ── */
+.section { margin-bottom: 28px; }
+.section-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.section-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; }
+.section-count { font-size: 11px; color: var(--text-faint); }
 
-  .node-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); margin-bottom: 12px; overflow: hidden;
-    transition: box-shadow 0.15s, border-color 0.15s;
-  }
-  .node-card:hover { border-color: #D4CFC8; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-  .node-card.can-film { border-left: 3px solid var(--film); }
+/* ── Card grid ── */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+  gap: 14px;
+}
 
-  .card-summary {
-    padding: 16px 18px; cursor: pointer;
-    display: flex; align-items: flex-start; gap: 12px;
-  }
-  .card-summary-body { flex: 1; min-width: 0; }
-  .trigger-text { font-size: 14px; color: var(--text); line-height: 1.55; margin-bottom: 10px; }
+/* ── Sticky note card ── */
+.node-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: box-shadow 0.18s, transform 0.18s;
+  display: flex; flex-direction: column;
+  padding: 14px 14px 12px;
+  min-height: 160px;
+  position: relative;
+  overflow: hidden;
+}
+.node-card:hover {
+  box-shadow: var(--card-hover);
+  transform: translateY(-2px);
+}
 
-  .card-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+/* film accent strip */
+.node-card.can-film::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--film);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
 
-  .pill {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 500;
-    background: var(--tag-bg); color: var(--text-muted); border: 1px solid var(--border-light);
-  }
-  .pill.has { background: var(--accent-light); color: var(--accent); border-color: #C8E0D0; }
-  .pill-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.7; }
+/* theme tag line at top */
+.card-theme {
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 5px;
+}
+.card-theme-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); flex-shrink: 0;
+}
 
-  .film-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600;
-    background: var(--film-light); color: var(--film); border: 1px solid #EAC9B4;
-  }
+/* trigger text */
+.card-trigger {
+  font-size: 13px; line-height: 1.6; color: var(--text);
+  flex: 1;
+  display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
-  .theme-tag { padding: 2px 7px; border-radius: 10px; font-size: 11px; background: var(--tag-bg); color: var(--text-muted); }
-  .card-date { font-size: 11px; color: var(--text-faint); margin-left: auto; }
+/* card footer */
+.card-footer {
+  margin-top: 12px; padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,.06);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 6px;
+}
 
-  .expand-icon {
-    flex-shrink: 0; color: var(--text-faint); font-size: 16px; line-height: 1;
-    margin-top: 2px; transition: transform 0.2s; user-select: none;
-  }
-  .node-card.open .expand-icon { transform: rotate(180deg); }
+/* completeness dots */
+.completeness {
+  display: flex; gap: 4px; align-items: center;
+}
+.c-dot {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  font-size: 9px; font-weight: 700; letter-spacing: 0;
+  background: var(--tag-bg); color: var(--text-faint);
+  border: 1px solid rgba(0,0,0,.07);
+  transition: background 0.15s;
+}
+.c-dot.has {
+  background: var(--accent-light); color: var(--accent);
+  border-color: #C8E0D0;
+}
 
-  .card-detail { display: none; border-top: 1px solid var(--border-light); }
-  .node-card.open .card-detail { display: block; }
+/* right side badges */
+.card-badges { display: flex; align-items: center; gap: 5px; }
 
-  .detail-sections { padding: 0 18px 18px; }
-  .detail-section { padding-top: 16px; }
-  .detail-section + .detail-section { border-top: 1px solid var(--border-light); margin-top: 4px; }
+.motif-pill {
+  font-size: 10px; color: var(--text-faint);
+  display: flex; align-items: center; gap: 3px;
+}
+.motif-pill.has-motif { color: var(--accent); }
 
-  .detail-label {
-    font-size: 11px; font-weight: 600; color: var(--text-faint);
-    text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px;
-    display: flex; align-items: center; gap: 6px;
-  }
+.film-pill {
+  font-size: 10px; font-weight: 600;
+  color: var(--film); background: var(--film-light);
+  padding: 2px 6px; border-radius: 10px;
+  border: 1px solid #EAC9B4;
+}
 
-  .detail-content { font-size: 14px; color: var(--text); line-height: 1.65; }
-  .detail-content.judgment { font-weight: 500; }
-  .detail-content.method {
-    background: var(--accent-light); border-left: 3px solid var(--accent);
-    padding: 10px 12px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; font-size: 13px;
-  }
+.card-date { font-size: 10px; color: var(--text-faint); }
 
-  /* AI additions */
-  --ai: #4A6FA5;
-  --ai-light: #EEF2FA;
+/* ── Detail modal ── */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(30,24,18,.45); backdrop-filter: blur(4px);
+  z-index: 200; align-items: center; justify-content: center; padding: 20px;
+}
+.overlay.open { display: flex; }
 
-  .ai-block {
-    background: #EEF2FA; border-left: 3px solid #4A6FA5;
-    padding: 10px 12px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    font-size: 13px; color: #2D4A72; margin-top: 8px;
-  }
+.detail-panel {
+  background: #FDFAF3; border-radius: 10px; width: 100%; max-width: 540px;
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0,0,0,.22);
+  border: 1px solid rgba(0,0,0,.07);
+}
 
-  .ai-tag {
-    display: inline-flex; align-items: center; gap: 3px;
-    font-size: 10px; font-weight: 700; color: #4A6FA5;
-    background: #D6E4F5; border-radius: 4px; padding: 1px 5px;
-    letter-spacing: 0.3px; vertical-align: middle; margin-right: 4px;
-  }
+.dp-head {
+  padding: 20px 20px 0;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.dp-meta { flex: 1; }
 
-  .ai-method-item {
-    background: #EEF2FA; border-left: 3px solid #4A6FA5;
-    padding: 10px 12px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    font-size: 13px; color: #2D4A72; margin-top: 6px;
-  }
+.dp-badges {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.dp-theme {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--accent); background: var(--accent-light);
+  padding: 2px 7px; border-radius: 10px; border: 1px solid #C8E0D0;
+}
+.dp-motif {
+  font-size: 10px; color: var(--text-muted); background: var(--tag-bg);
+  padding: 2px 7px; border-radius: 10px;
+}
+.dp-film {
+  font-size: 10px; font-weight: 600; color: var(--film); background: var(--film-light);
+  padding: 2px 7px; border-radius: 10px; border: 1px solid #EAC9B4;
+}
 
-  .ai-method-item:first-child { margin-top: 8px; }
+.dp-trigger {
+  font-size: 15px; font-weight: 600; color: var(--text);
+  line-height: 1.55; margin-bottom: 4px;
+}
+.dp-date { font-size: 11px; color: var(--text-faint); }
 
-  .empty { text-align: center; padding: 60px 0; color: var(--text-faint); font-size: 14px; }
+.dp-close {
+  flex-shrink: 0; width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--tag-bg); border: none; border-radius: 50%;
+  cursor: pointer; font-size: 13px; color: var(--text-muted);
+  margin-top: -2px;
+}
 
-  .theme-section { margin-bottom: 32px; }
-  .radar-section { margin-bottom: 40px; }
+.dp-body { padding: 16px 20px 20px; }
 
-  .radar-strip { display: flex; gap: 8px; flex-wrap: wrap; }
-  .radar-chip {
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 7px 14px; background: var(--film-light); border: 1px solid #EAC9B4;
-    border-radius: 20px; font-size: 13px; color: var(--film); font-weight: 500;
-    cursor: pointer; transition: background 0.15s;
-  }
-  .radar-chip:hover { background: #FAE0CE; }
+.dp-section { margin-bottom: 16px; }
+.dp-section:last-child { margin-bottom: 0; }
 
-  .welcome {
-    background: var(--surface); border: 1px dashed var(--border);
-    border-radius: var(--radius); padding: 48px 32px; text-align: center;
-  }
-  .welcome h2 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-  .welcome p { color: var(--text-muted); font-size: 13px; line-height: 1.7; max-width: 360px; margin: 0 auto; }
+.dp-label {
+  font-size: 10px; font-weight: 700; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: 0.6px;
+  margin-bottom: 6px; display: flex; align-items: center; gap: 5px;
+}
 
-  /* Modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35);
-    z-index: 200; align-items: center; justify-content: center; padding: 20px;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--surface); border-radius: var(--radius); width: 100%;
-    max-width: 560px; max-height: 90vh; overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-  }
-  .modal-head { padding: 20px 20px 0; display: flex; align-items: center; justify-content: space-between; }
-  .modal-title { font-size: 15px; font-weight: 600; }
-  .modal-close {
-    width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-    border: none; background: var(--tag-bg); border-radius: 50%; cursor: pointer;
-    font-size: 13px; color: var(--text-muted);
-  }
-  .modal-body { padding: 20px; }
-  .field { margin-bottom: 16px; }
-  .field label {
-    display: block; font-size: 12px; font-weight: 600; color: var(--text-muted);
-    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
-  }
-  .field textarea, .field input {
-    width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); font-size: 14px; color: var(--text);
-    font-family: inherit; resize: vertical; outline: none; line-height: 1.55;
-    transition: border-color 0.15s;
-  }
-  .field textarea:focus, .field input:focus { border-color: var(--accent-muted); }
-  .field textarea { min-height: 68px; }
-  .field-hint { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
-  .modal-footer { padding: 0 20px 20px; display: flex; gap: 8px; justify-content: flex-end; }
-  .btn-cancel {
-    padding: 8px 16px; background: var(--tag-bg); border: none; border-radius: 20px;
-    font-size: 13px; cursor: pointer; color: var(--text-muted);
-  }
-  .btn-save {
-    padding: 8px 18px; background: var(--accent); color: white; border: none;
-    border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer;
-  }
-  .btn-save:hover { background: #3d6b4a; }
+.dp-content { font-size: 13px; color: var(--text); line-height: 1.65; }
+.dp-content.judgment { font-weight: 600; font-size: 14px; }
+
+.dp-ai-note {
+  margin-top: 8px; background: var(--ai-bg); border-left: 3px solid var(--ai-border);
+  padding: 9px 11px; border-radius: 0 4px 4px 0; font-size: 12px; color: var(--ai-text);
+  line-height: 1.6;
+}
+.dp-ai-tag {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  background: #C8D9F0; color: var(--ai-border); border-radius: 3px;
+  padding: 1px 4px; margin-right: 4px; letter-spacing: 0.2px;
+  vertical-align: middle;
+}
+
+.dp-method-user {
+  background: var(--accent-light); border-left: 3px solid var(--accent);
+  padding: 9px 11px; border-radius: 0 4px 4px 0; font-size: 13px;
+  margin-bottom: 6px;
+}
+.dp-method-ai {
+  background: var(--ai-bg); border-left: 3px solid var(--ai-border);
+  padding: 9px 11px; border-radius: 0 4px 4px 0; font-size: 12px; color: var(--ai-text);
+  margin-top: 6px; line-height: 1.6;
+}
+
+.dp-completeness {
+  display: flex; gap: 8px; align-items: center;
+  padding: 10px 0; border-top: 1px solid rgba(0,0,0,.06); margin-top: 4px;
+}
+.dp-c-item {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; color: var(--text-faint);
+}
+.dp-c-item.has { color: var(--accent); }
+.dp-c-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: 0.7; }
+
+/* ── Add modal ── */
+.add-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(30,24,18,.45); backdrop-filter: blur(4px);
+  z-index: 300; align-items: center; justify-content: center; padding: 20px;
+}
+.add-overlay.open { display: flex; }
+
+.add-panel {
+  background: #FDFAF3; border-radius: 10px; width: 100%; max-width: 520px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0,0,0,.22); border: 1px solid rgba(0,0,0,.07);
+}
+.add-head { padding: 18px 20px 0; display: flex; align-items: center; justify-content: space-between; }
+.add-title { font-size: 14px; font-weight: 600; }
+.add-close {
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  background: var(--tag-bg); border: none; border-radius: 50%;
+  cursor: pointer; font-size: 13px; color: var(--text-muted);
+}
+.add-body { padding: 16px 20px; }
+.field { margin-bottom: 14px; }
+.field label {
+  display: block; font-size: 10px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px;
+}
+.field textarea, .field input {
+  width: 100%; padding: 9px 11px; background: rgba(255,255,255,.65);
+  border: 1px solid rgba(0,0,0,.1); border-radius: 5px;
+  font-size: 13px; color: var(--text); font-family: inherit;
+  resize: vertical; outline: none; line-height: 1.55; transition: border-color 0.15s;
+}
+.field textarea:focus, .field input:focus { border-color: rgba(0,0,0,.2); background: rgba(255,255,255,.9); }
+.field textarea { min-height: 64px; }
+.field-hint { font-size: 10px; color: var(--text-faint); margin-top: 3px; }
+.add-footer { padding: 0 20px 18px; display: flex; gap: 8px; justify-content: flex-end; }
+.btn-cancel {
+  padding: 7px 14px; background: var(--tag-bg); border: none; border-radius: 20px;
+  font-size: 13px; cursor: pointer; color: var(--text-muted);
+}
+.btn-save {
+  padding: 7px 16px; background: var(--text); color: #FDFAF3; border: none;
+  border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer;
+}
+
+/* ── Empty ── */
+.empty {
+  grid-column: 1/-1; text-align: center;
+  padding: 48px 0; color: var(--text-faint); font-size: 13px;
+}
+.welcome {
+  background: rgba(255,255,255,.4); border: 1px dashed rgba(0,0,0,.12);
+  border-radius: var(--radius); padding: 40px 24px; text-align: center;
+  grid-column: 1/-1;
+}
+.welcome h2 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.welcome p { color: var(--text-muted); font-size: 13px; line-height: 1.7; }
 </style>
 </head>
 <body>
 
 <header class="header">
-  <div class="logo">Mental <span>Garden</span></div>
-  <div class="header-divider"></div>
+  <div class="logo">Mental <em>Garden</em></div>
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-    <input type="text" class="search-input" id="searchInput" placeholder="搜索节点…">
+    <input type="text" class="search-input" id="searchInput" placeholder="搜索…">
   </div>
   <div class="header-right">
     <span class="node-count" id="nodeCount"></span>
-    <button class="add-btn" onclick="openModal()">＋ 记录触动</button>
+    <button class="add-btn" onclick="openAdd()">＋ 记录</button>
   </div>
 </header>
 
 <div class="layout" id="app">
-  <div style="color:#B0A89E;font-size:13px;">加载中…</div>
+  <div style="color:var(--text-faint);font-size:13px;">加载中…</div>
 </div>
 
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="modal-head">
-      <div class="modal-title">记录一个触动</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+<!-- Detail overlay -->
+<div class="overlay" id="detailOverlay" onclick="closeDetail(event)">
+  <div class="detail-panel" id="detailPanel"></div>
+</div>
+
+<!-- Add overlay -->
+<div class="add-overlay" id="addOverlay">
+  <div class="add-panel">
+    <div class="add-head">
+      <div class="add-title">记录一个触动</div>
+      <button class="add-close" onclick="closeAdd()">✕</button>
     </div>
-    <div class="modal-body">
+    <div class="add-body">
       <div class="field">
-        <label>触动 Trigger *</label>
-        <textarea id="f-trigger" placeholder="让你停下来的那句话、那件事、那个瞬间…" rows="3"></textarea>
+        <label>触动 *</label>
+        <textarea id="f-trigger" placeholder="让你停下来的那句话、那件事…" rows="3"></textarea>
       </div>
       <div class="field">
-        <label>案例 Case</label>
-        <textarea id="f-case" placeholder="谁做了什么，发生了什么…（要有具体人物或情境）"></textarea>
+        <label>案例</label>
+        <textarea id="f-case" placeholder="谁做了什么，发生了什么…"></textarea>
       </div>
       <div class="field">
-        <label>判断 Judgment</label>
+        <label>判断</label>
         <textarea id="f-judgment" placeholder="你从中得出了什么结论？"></textarea>
       </div>
       <div class="field">
-        <label>方法 Method</label>
-        <textarea id="f-method" placeholder="可以怎么用？下次遇到类似情况怎么做？"></textarea>
+        <label>方法</label>
+        <textarea id="f-method" placeholder="下次怎么用？"></textarea>
       </div>
       <div class="field">
-        <label>主题 Theme</label>
-        <input type="text" id="f-themes" placeholder="AI应用、认知偏差、组织管理…">
-        <div class="field-hint">多个主题用逗号分隔</div>
+        <label>主题</label>
+        <input type="text" id="f-themes" placeholder="AI应用、老板演讲…">
+        <div class="field-hint">逗号分隔</div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeModal()">取消</button>
-      <button class="btn-save" onclick="saveNode()">存入花园</button>
+    <div class="add-footer">
+      <button class="btn-cancel" onclick="closeAdd()">取消</button>
+      <button class="btn-save" onclick="saveNode()">存入</button>
     </div>
   </div>
 </div>
@@ -299,195 +429,216 @@
 let allNodes = [];
 let searchQuery = '';
 
+// theme → color mapping (consistent per theme name)
+const THEME_COLORS = {};
+const PALETTE = ['#4A7C59','#7C4A6B','#6B7C4A','#4A5E7C','#7C6B4A','#4A7C72','#7C4A4A'];
+function themeColor(t) {
+  if (!THEME_COLORS[t]) THEME_COLORS[t] = PALETTE[Object.keys(THEME_COLORS).length % PALETTE.length];
+  return THEME_COLORS[t];
+}
+
 async function init() {
   try {
-    const res = await fetch('data/nodes.json?t=' + Date.now());
-    const data = await res.json();
-    allNodes = data.nodes || [];
+    const r = await fetch('data/nodes.json?t=' + Date.now());
+    const d = await r.json();
+    allNodes = d.nodes || [];
   } catch(e) { allNodes = []; }
   render();
 }
 
 function canFilm(n) { return n.judgment && (n.case || n.method || (n.method_ai && n.method_ai.length)); }
-function hasPart(n, p) { return !!(n[p] && n[p].trim()); }
+function has(n, f) { return !!(n[f] && n[f].trim()); }
 
-function matchesSearch(n, q) {
+function matchSearch(n, q) {
   if (!q) return true;
-  const text = [n.trigger, n.case, n.judgment, n.method, ...(n.themes||[])].join(' ').toLowerCase();
-  return q.toLowerCase().split(/\s+/).every(w => text.includes(w));
+  const t = [n.trigger, n.case, n.judgment, n.method, ...(n.themes||[])].join(' ').toLowerCase();
+  return q.toLowerCase().split(/\s+/).every(w => t.includes(w));
 }
 
 function render() {
   const app = document.getElementById('app');
   const q = searchQuery.trim();
-  const filtered = allNodes.filter(n => matchesSearch(n, q));
-  document.getElementById('nodeCount').textContent = allNodes.length + ' 个节点';
+  const nodes = allNodes.filter(n => matchSearch(n, q));
+  document.getElementById('nodeCount').textContent = allNodes.length + ' 个';
 
   if (allNodes.length === 0) {
-    app.innerHTML = `<div class="welcome">
-      <h2>🌱 花园还是空的</h2>
-      <p>点击右上角「记录触动」，把今天让你停下来的瞬间存进来。<br>有了判断 + 案例，就可以拍视频了。</p>
-    </div>`;
+    app.innerHTML = `<div class="card-grid"><div class="welcome"><h2>🌱 花园还是空的</h2><p>点右上角「记录」，把今天让你停下来的瞬间存进来。</p></div></div>`;
     return;
   }
 
   let html = '';
-  const filmable = filtered.filter(canFilm);
 
-  if (!q && filmable.length > 0) {
-    html += `<div class="radar-section">
-      <div class="section-head">
-        <span class="section-title">🎬 创作雷达</span>
-        <span class="section-sub">这些节点可以拍了</span>
-      </div>
-      <div class="radar-strip">`;
+  // radar
+  const filmable = nodes.filter(canFilm);
+  if (!q && filmable.length) {
+    html += `<div class="radar-row"><span class="radar-label">🎬 可以拍</span>`;
     filmable.forEach(n => {
-      html += `<span class="radar-chip" onclick="scrollToNode('${n.id}')">🎬 ${esc(short(n.trigger, 20))}</span>`;
+      html += `<span class="radar-chip" onclick="openDetailById('${n.id}')">${esc(short(n.trigger, 18))}</span>`;
     });
-    html += `</div></div>`;
+    html += `</div>`;
   }
 
-  const themesMap = {};
-  filtered.forEach(n => {
-    (n.themes || []).forEach(t => {
-      if (!themesMap[t]) themesMap[t] = [];
-      themesMap[t].push(n);
+  // group by theme
+  const themeMap = {};
+  nodes.forEach(n => {
+    const themes = n.themes && n.themes.length ? n.themes : ['其他'];
+    themes.forEach(t => {
+      if (!themeMap[t]) themeMap[t] = [];
+      themeMap[t].push(n);
     });
   });
-  const themes = Object.keys(themesMap);
 
-  if (!q && themes.length >= 1) {
-    const rendered = new Set();
-    themes.forEach(theme => {
-      html += `<div class="theme-section">
-        <div class="section-head">
-          <span class="section-title">${esc(theme)}</span>
-          <span class="section-sub">${themesMap[theme].length} 个</span>
-        </div>`;
-      themesMap[theme].forEach(n => {
-        if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); }
-      });
-      html += `</div>`;
+  const rendered = new Set();
+  Object.keys(themeMap).forEach(theme => {
+    html += `<div class="section">
+      <div class="section-head">
+        <span class="section-title" style="color:${themeColor(theme)}">${esc(theme)}</span>
+        <span class="section-count">${themeMap[theme].length}</span>
+      </div>
+      <div class="card-grid">`;
+    themeMap[theme].forEach(n => {
+      if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); }
     });
-    const unthemed = filtered.filter(n => !n.themes || n.themes.length === 0);
+    html += `</div></div>`;
+  });
+
+  if (!q) {
+    const unthemed = nodes.filter(n => !n.themes || !n.themes.length);
     if (unthemed.length) {
-      html += `<div class="theme-section"><div class="section-head"><span class="section-title">其他</span></div>`;
-      unthemed.forEach(n => { html += cardHtml(n); });
-      html += `</div>`;
-    }
-  } else {
-    if (filtered.length === 0) {
-      html += `<div class="empty">没有找到匹配的节点</div>`;
-    } else {
-      filtered.forEach(n => { html += cardHtml(n); });
+      html += `<div class="section"><div class="section-head"><span class="section-title">其他</span></div><div class="card-grid">`;
+      unthemed.forEach(n => { if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); } });
+      html += `</div></div>`;
     }
   }
+
+  if (q && nodes.length === 0) html += `<div class="card-grid"><div class="empty">没有匹配的节点</div></div>`;
 
   app.innerHTML = html;
 }
 
-function cardHtml(node) {
-  const film = canFilm(node);
-  const hasJ = hasPart(node, 'judgment');
-  const hasC = hasPart(node, 'case');
-  const hasM = hasPart(node, 'method');
+function cardHtml(n) {
+  const film = canFilm(n);
+  const hasJ = has(n,'judgment'), hasC = has(n,'case'), hasM = has(n,'method') || (n.method_ai && n.method_ai.length);
+  const theme = n.themes && n.themes[0] ? n.themes[0] : '';
+  const color = theme ? themeColor(theme) : 'var(--text-muted)';
 
-  const pills = [
-    {label:'判断', has:hasJ}, {label:'案例', has:hasC}, {label:'方法', has:hasM}
-  ].map(p => `<span class="pill${p.has?' has':''}"><span class="pill-dot"></span>${p.label}</span>`).join('');
+  const dots = [
+    {label:'判', has:hasJ}, {label:'案', has:hasC}, {label:'方', has:hasM}
+  ].map(d => `<span class="c-dot${d.has?' has':''}" title="${d.label}">${d.label}</span>`).join('');
 
-  const filmBadge = film ? `<span class="film-badge">🎬 可以拍</span>` : '';
-  const themeTags = (node.themes||[]).map(t => `<span class="theme-tag">${esc(t)}</span>`).join('');
+  const motif = n.motif
+    ? `<span class="motif-pill has-motif">🌿 ${esc(short(n.motif,10))}</span>`
+    : `<span class="motif-pill">— 独立</span>`;
 
-  const hasCNote = !!(node.case_note && node.case_note.trim());
-  const hasMAi = node.method_ai && node.method_ai.length > 0;
+  const filmPill = film ? `<span class="film-pill">🎬</span>` : '';
 
-  let detail = '';
-  if (hasC || hasCNote) {
-    detail += `<div class="detail-section"><div class="detail-label">📍 案例</div>`;
-    if (hasC) detail += `<div class="detail-content">${esc(node.case)}</div>`;
-    if (hasCNote) detail += `<div class="ai-block"><span class="ai-tag">AI 核实</span>${esc(node.case_note)}</div>`;
-    detail += `</div>`;
-  }
-  if (hasJ) detail += `<div class="detail-section"><div class="detail-label">💡 判断</div><div class="detail-content judgment">${esc(node.judgment)}</div></div>`;
-  if (hasM || hasMAi) {
-    detail += `<div class="detail-section"><div class="detail-label">🔧 方法</div>`;
-    if (hasM) detail += `<div class="detail-content method">${esc(node.method)}</div>`;
-    if (hasMAi) node.method_ai.forEach(m => {
-      detail += `<div class="ai-method-item"><span class="ai-tag">AI</span>${esc(m)}</div>`;
-    });
-    detail += `</div>`;
-  }
-
-  return `<div class="node-card${film?' can-film':''}" id="node-${node.id}" onclick="toggleCard(this)">
-    <div class="card-summary">
-      <div class="card-summary-body">
-        <div class="trigger-text">${esc(node.trigger)}</div>
-        <div class="card-meta">${pills}${themeTags}${filmBadge}<span class="card-date">${node.date||''}</span></div>
-      </div>
-      <div class="expand-icon">⌄</div>
+  return `<div class="node-card${film?' can-film':''}" id="node-${n.id}" onclick="openDetailById('${n.id}')">
+    <div class="card-theme"><span class="card-theme-dot" style="background:${color}"></span>${esc(theme)}</div>
+    <div class="card-trigger">${esc(n.trigger)}</div>
+    <div class="card-footer">
+      <div class="completeness">${dots}</div>
+      <div class="card-badges">${motif}${filmPill}<span class="card-date">${(n.date||'').slice(5)}</span></div>
     </div>
-    <div class="card-detail"><div class="detail-sections">${detail}</div></div>
   </div>`;
 }
 
-function toggleCard(card) { card.classList.toggle('open'); }
+function openDetailById(id) {
+  const n = allNodes.find(x => x.id === id);
+  if (!n) return;
 
-function scrollToNode(id) {
-  const el = document.getElementById('node-' + id);
-  if (el) { el.scrollIntoView({behavior:'smooth', block:'start'}); setTimeout(() => el.classList.add('open'), 300); }
+  const film = canFilm(n);
+  const hasJ = has(n,'judgment'), hasC = has(n,'case'), hasM = has(n,'method');
+  const hasCAI = !!(n.case_note && n.case_note.trim());
+  const hasMAI = n.method_ai && n.method_ai.length;
+  const theme = n.themes && n.themes[0] ? n.themes[0] : '';
+
+  let body = '';
+
+  // case
+  if (hasC || hasCAI) {
+    body += `<div class="dp-section"><div class="dp-label">📍 案例</div>`;
+    if (hasC) body += `<div class="dp-content">${esc(n.case)}</div>`;
+    if (hasCAI) body += `<div class="dp-ai-note"><span class="dp-ai-tag">AI 核实</span>${esc(n.case_note)}</div>`;
+    body += `</div>`;
+  }
+
+  // judgment
+  if (hasJ) {
+    body += `<div class="dp-section"><div class="dp-label">💡 判断</div><div class="dp-content judgment">${esc(n.judgment)}</div></div>`;
+  }
+
+  // method
+  if (hasM || hasMAI) {
+    body += `<div class="dp-section"><div class="dp-label">🔧 方法</div>`;
+    if (hasM) body += `<div class="dp-method-user">${esc(n.method)}</div>`;
+    if (hasMAI) n.method_ai.forEach(m => {
+      body += `<div class="dp-method-ai"><span class="dp-ai-tag">AI</span>${esc(m)}</div>`;
+    });
+    body += `</div>`;
+  }
+
+  // completeness footer
+  body += `<div class="dp-completeness">
+    <span class="dp-c-item${hasJ?' has':''}"><span class="dp-c-dot"></span>判断</span>
+    <span class="dp-c-item${hasC?' has':''}"><span class="dp-c-dot"></span>案例</span>
+    <span class="dp-c-item${(hasM||hasMAI)?' has':''}"><span class="dp-c-dot"></span>方法</span>
+  </div>`;
+
+  const themeBadge = theme ? `<span class="dp-theme">${esc(theme)}</span>` : '';
+  const motifBadge = n.motif ? `<span class="dp-motif">🌿 ${esc(n.motif)}</span>` : '';
+  const filmBadge = film ? `<span class="dp-film">🎬 可以拍</span>` : '';
+
+  document.getElementById('detailPanel').innerHTML = `
+    <div class="dp-head">
+      <div class="dp-meta">
+        <div class="dp-badges">${themeBadge}${motifBadge}${filmBadge}</div>
+        <div class="dp-trigger">${esc(n.trigger)}</div>
+        <div class="dp-date">${n.date || ''}</div>
+      </div>
+      <button class="dp-close" onclick="closeDetailBtn()">✕</button>
+    </div>
+    <div class="dp-body">${body}</div>`;
+
+  document.getElementById('detailOverlay').classList.add('open');
 }
+
+function closeDetail(e) { if (e.target === document.getElementById('detailOverlay')) closeDetailBtn(); }
+function closeDetailBtn() { document.getElementById('detailOverlay').classList.remove('open'); }
+
+function openAdd() { document.getElementById('addOverlay').classList.add('open'); document.getElementById('f-trigger').focus(); }
+function closeAdd() {
+  document.getElementById('addOverlay').classList.remove('open');
+  ['f-trigger','f-case','f-judgment','f-method','f-themes'].forEach(id => document.getElementById(id).value = '');
+}
+
+function saveNode() {
+  const trigger = document.getElementById('f-trigger').value.trim();
+  if (!trigger) { alert('触动是必填的'); return; }
+  const themesRaw = document.getElementById('f-themes').value.trim();
+  const themes = themesRaw ? themesRaw.split(/[,，]+/).map(t=>t.trim()).filter(Boolean) : [];
+  const today = new Date().toISOString().slice(0,10);
+  const node = {
+    id: String(allNodes.length + 1).padStart(3,'0'), date: today,
+    trigger,
+    case: document.getElementById('f-case').value.trim(),
+    judgment: document.getElementById('f-judgment').value.trim(),
+    method: document.getElementById('f-method').value.trim(),
+    method_ai: [], themes, ai_reviewed: false, updatedAt: today
+  };
+  allNodes.unshift(node); closeAdd(); render();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify({nodes:allNodes},null,2)],{type:'application/json'}));
+  a.download = 'nodes.json'; a.click();
+  setTimeout(() => alert('nodes.json 已下载。替换 data/ 文件夹里的原文件，然后 git push。'), 200);
+}
+
+document.getElementById('searchInput').addEventListener('input', function(){ searchQuery=this.value; render(); });
 
 function esc(s) {
   if (!s) return '';
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');
 }
-
-function short(s, max) { return s && s.length > max ? s.slice(0,max)+'…' : (s||''); }
-
-document.getElementById('searchInput').addEventListener('input', function() {
-  searchQuery = this.value; render();
-});
-
-function openModal() {
-  document.getElementById('modalOverlay').classList.add('open');
-  document.getElementById('f-trigger').focus();
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('open');
-  ['f-trigger','f-case','f-judgment','f-method','f-themes'].forEach(id => { document.getElementById(id).value=''; });
-}
-
-function saveNode() {
-  const trigger = document.getElementById('f-trigger').value.trim();
-  if (!trigger) { alert('触动（Trigger）是必填的。'); return; }
-  const themesRaw = document.getElementById('f-themes').value.trim();
-  const themes = themesRaw ? themesRaw.split(/[,，]+/).map(t=>t.trim()).filter(Boolean) : [];
-  const today = new Date().toISOString().slice(0,10);
-  const nextId = String(allNodes.length + 1).padStart(3,'0');
-  const node = {
-    id: nextId, date: today,
-    trigger,
-    case: document.getElementById('f-case').value.trim(),
-    judgment: document.getElementById('f-judgment').value.trim(),
-    method: document.getElementById('f-method').value.trim(),
-    themes, updatedAt: today
-  };
-  allNodes.unshift(node);
-  closeModal();
-  render();
-  const json = JSON.stringify({nodes: allNodes}, null, 2);
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([json], {type:'application/json'}));
-  a.download = 'nodes.json';
-  a.click();
-  setTimeout(() => alert('✅ 节点已添加！\n\nnodes.json 已下载。\n把它放到 judgment-os/data/ 文件夹里，替换原文件，然后运行 git push，花园就更新了。'), 200);
-}
-
-document.getElementById('modalOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
+function short(s,n) { return s&&s.length>n?s.slice(0,n)+'…':(s||''); }
 
 init();
 </script>
