@@ -818,7 +818,7 @@ function cardHtml(n) {
   return `<div class="node-card${film?' can-film':''}" id="node-${n.id}" onclick="openDetail('${n.id}')">
     <div class="card-domain"><span class="card-domain-dot"></span>${esc(n.domain||'')}</div>
     <div class="card-trigger">${esc(n.trigger)}</div>
-    <div class="card-footer"><div class="c-dots">${dots}</div><div class="card-right">${motif}${filmBadge}<span class="card-date">${(n.date||'').slice(5)}</span></div></div>
+    <div class="card-footer"><div class="c-dots">${dots}</div><div class="card-right">${motif}${filmBadge}<span class="card-date">${((n.updatedAt||n.date)||'').slice(5)}</span></div></div>
   </div>`;
 }
 
@@ -850,7 +850,7 @@ function openDetail(id) {
   </div>`;
   document.getElementById('detailPanel').innerHTML=`
     <div class="detail-close-row"><button class="detail-close" onclick="closeDetail()">✕</button></div>
-    <div class="detail-head"><div class="detail-badges">${domBadge}${motifBadge}${filmBadge}</div><div class="detail-trigger">${esc(n.trigger)}</div><div class="detail-date">${n.date||''}</div></div>
+    <div class="detail-head"><div class="detail-badges">${domBadge}${motifBadge}${filmBadge}</div><div class="detail-trigger">${esc(n.trigger)}</div><div class="detail-date">${n.updatedAt||n.date||''}</div></div>
     <div class="detail-body">${body}</div>`;
   document.getElementById('detailOverlay').classList.add('open');
 }
