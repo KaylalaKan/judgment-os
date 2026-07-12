@@ -33,7 +33,7 @@
   --font-ui: 'Inter', system-ui, sans-serif;
 }
 
-html { scroll-behavior: smooth; background-color: #2d6aad; }
+html { scroll-behavior: smooth; background-color: #3a7fc1; }
 
 body {
   min-height: 100vh;
@@ -46,77 +46,23 @@ body {
   overflow-x: hidden;
 }
 
-/* ── FIXED BACKGROUND (no backdrop-filter conflict) ── */
+/* ── FIXED BACKGROUND ── */
 #bg {
   position: fixed; inset: 0; z-index: -1;
-  background: linear-gradient(175deg, #2d6aad 0%, #4a90d9 20%, #6aaee0 45%, #a8d4f0 70%, #d8ecf8 88%, #eef6fc 100%);
+  background: url('assets/bg.jpg') center top / cover no-repeat;
+}
+/* subtle dark gradient at bottom so cards are readable as you scroll */
+#bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 55%, rgba(20,40,70,0.18) 100%);
 }
 
-/* ── SCROLL WARM OVERLAY (fixed, behind scene) ── */
-#scroll-warm {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: linear-gradient(175deg, rgba(180,100,120,0) 0%, rgba(200,120,80,0) 40%, rgba(220,160,100,0) 100%);
-  transition: opacity 0.3s;
-  opacity: 0;
-}
-
-/* ── SCENE LAYER (fixed, behind everything) ── */
+/* ── SCENE LAYER ── */
 #scene {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 1;
   overflow: hidden;
-}
-
-/* Sun / glow */
-.sun-glow {
-  position: absolute;
-  top: -80px; right: -80px;
-  width: 320px; height: 320px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,230,100,0.55) 0%, rgba(255,200,60,0.25) 35%, rgba(255,180,40,0.08) 60%, transparent 75%);
-  animation: sunPulse 6s ease-in-out infinite;
-  will-change: transform, opacity;
-}
-@keyframes sunPulse {
-  0%,100% { transform: scale(1); opacity: 1; }
-  50%      { transform: scale(1.06); opacity: 0.85; }
-}
-
-/* Light rays */
-.sun-rays {
-  position: absolute;
-  top: -40px; right: -40px;
-  width: 400px; height: 400px;
-  background: conic-gradient(
-    from 200deg,
-    transparent 0deg, rgba(255,230,120,0.07) 3deg, transparent 6deg,
-    transparent 12deg, rgba(255,230,120,0.06) 15deg, transparent 18deg,
-    transparent 24deg, rgba(255,230,120,0.05) 27deg, transparent 30deg,
-    transparent 0deg
-  );
-  animation: raysRotate 20s linear infinite;
-  will-change: transform;
-}
-@keyframes raysRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-/* Cherry tree — left */
-.tree-left {
-  position: absolute;
-  bottom: 0; left: -20px;
-  width: 440px; height: 620px;
-  transform-origin: bottom left;
-}
-/* Cherry tree — right */
-.tree-right {
-  position: absolute;
-  bottom: 0; right: -20px;
-  width: 380px; height: 560px;
-  transform-origin: bottom right;
 }
 
 /* ── PETALS ── */
@@ -263,32 +209,49 @@ body {
 /* ── CARD GRID ── */
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
 
-/* ── NODE CARD ── */
+/* ── NODE CARD — hand-drawn style ── */
 .node-card {
-  background: rgba(255,255,255,0.92);
-  border: 1px solid rgba(255,255,255,0.98);
-  border-radius: var(--r-card);
-  box-shadow: var(--shadow-card);
+  background: rgba(255,252,245,0.93);
+  border: 1.5px solid rgba(180,150,120,0.35);
+  /* slightly uneven radius for hand-drawn feel */
+  border-radius: 18px 22px 20px 24px / 22px 18px 24px 20px;
+  box-shadow:
+    3px 4px 0px rgba(160,130,100,0.18),
+    6px 8px 16px rgba(80,50,30,0.10);
   padding: 16px 16px 13px;
   min-height: 164px;
   display: flex; flex-direction: column;
   cursor: pointer;
-  transition: transform 0.18s, box-shadow 0.18s, opacity 0.5s, translate 0.5s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.5s, translate 0.5s;
   position: relative; overflow: hidden;
-  backdrop-filter: blur(6px);
   opacity: 0;
   translate: 0 16px;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
+/* paper grain overlay */
+.node-card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  border-radius: inherit;
+  pointer-events: none; z-index: 0;
+}
+.node-card > * { position: relative; z-index: 1; }
 .node-card.visible {
   opacity: 1;
   translate: 0 0;
 }
-.node-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+.node-card:hover {
+  box-shadow:
+    4px 6px 0px rgba(160,130,100,0.22),
+    8px 14px 28px rgba(80,50,30,0.14);
+}
 .node-card.can-film::before {
   content: '';
   position: absolute; top: 0; left: 0; right: 0; height: 2px;
   background: linear-gradient(90deg, transparent, #f9a8c9 40%, var(--fern) 60%, transparent);
-  opacity: 0.7;
+  opacity: 0.7; z-index: 2;
 }
 
 .card-domain {
@@ -455,118 +418,9 @@ body {
 </head>
 <body>
 
-<!-- Scene: trees + sun (fixed behind content) -->
+<!-- Fixed background + scene -->
 <div id="bg"></div>
-<div id="scroll-warm"></div>
-<div id="scene">
-  <div class="sun-glow"></div>
-  <div class="sun-rays"></div>
-
-  <!-- Left cherry tree -->
-  <svg class="tree-left" viewBox="0 0 440 620" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMax meet">
-    <defs>
-      <filter id="bl-soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="11"/></filter>
-      <filter id="bl-mid"  x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6"/></filter>
-      <filter id="bl-crisp" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
-    </defs>
-    <!-- base blossom cloud – very soft, large -->
-    <g filter="url(#bl-soft)" opacity="0.88">
-      <ellipse cx="180" cy="230" rx="170" ry="140" fill="#ffb7c5"/>
-      <ellipse cx="80"  cy="200" rx="120" ry="100" fill="#ffc8d5"/>
-      <ellipse cx="290" cy="210" rx="130" ry="110" fill="#ffafc0"/>
-      <ellipse cx="150" cy="140" rx="140" ry="100" fill="#ffbfcf"/>
-      <ellipse cx="240" cy="160" rx="110" ry="90"  fill="#ffc4d2"/>
-      <ellipse cx="50"  cy="240" rx="90"  ry="80"  fill="#ffd0de"/>
-      <ellipse cx="350" cy="220" rx="100" ry="85"  fill="#ffb2c4"/>
-      <ellipse cx="180" cy="100" rx="110" ry="75"  fill="#ffccd8"/>
-      <ellipse cx="380" cy="160" rx="80"  ry="70"  fill="#ffbac8"/>
-    </g>
-    <!-- mid layer – depth and density -->
-    <g filter="url(#bl-mid)" opacity="0.65">
-      <ellipse cx="150" cy="200" rx="110" ry="90"  fill="#f598b0"/>
-      <ellipse cx="250" cy="185" rx="100" ry="82"  fill="#f590a8"/>
-      <ellipse cx="90"  cy="175" rx="85"  ry="70"  fill="#f8a8be"/>
-      <ellipse cx="310" cy="195" rx="90"  ry="75"  fill="#f498b2"/>
-      <ellipse cx="180" cy="120" rx="95"  ry="65"  fill="#f8b0c5"/>
-    </g>
-    <!-- light highlight puffs on top -->
-    <g filter="url(#bl-crisp)" opacity="0.55">
-      <ellipse cx="130" cy="160" rx="60" ry="48" fill="#ffe0ea"/>
-      <ellipse cx="220" cy="140" rx="55" ry="44" fill="#ffdce8"/>
-      <ellipse cx="310" cy="170" rx="52" ry="42" fill="#ffd8e6"/>
-      <ellipse cx="80"  cy="210" rx="50" ry="40" fill="#ffe4ec"/>
-      <ellipse cx="370" cy="185" rx="48" ry="38" fill="#ffdae8"/>
-    </g>
-    <!-- branches (on top of blossoms) -->
-    <!-- main trunk -->
-    <path d="M75 620 C80 540 88 455 96 375 C104 298 115 240 132 188 C146 145 162 108 178 68" stroke="#2d1205" stroke-width="18" stroke-linecap="round" fill="none"/>
-    <!-- lower left branch -->
-    <path d="M92 420 C65 375 38 330 8 292" stroke="#3a1808" stroke-width="11" stroke-linecap="round" fill="none"/>
-    <!-- left-upper branch -->
-    <path d="M108 350 C72 300 32 255 -10 210 C-30 188 -40 165 -44 138" stroke="#3a1808" stroke-width="9" stroke-linecap="round" fill="none"/>
-    <!-- right branch -->
-    <path d="M120 310 C175 265 235 220 295 178 C335 150 375 128 420 105" stroke="#3a1808" stroke-width="9" stroke-linecap="round" fill="none"/>
-    <!-- upper center-right -->
-    <path d="M148 230 C185 190 225 155 268 118 C305 87 345 62 390 38" stroke="#4a2010" stroke-width="7" stroke-linecap="round" fill="none"/>
-    <!-- upper left -->
-    <path d="M140 255 C108 215 72 178 38 138 C18 116 4 92 -8 65" stroke="#4a2010" stroke-width="7" stroke-linecap="round" fill="none"/>
-    <!-- thin top twigs -->
-    <path d="M162 155 C148 125 132 98 118 68 C108 48 96 30 82 10" stroke="#5a2812" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M172 130 C188 105 206 82 225 58 C240 38 258 20 278 2"  stroke="#5a2812" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M155 180 C130 155 105 130 78 108 C58 90 38 72 16 52"  stroke="#5a2812" stroke-width="3" stroke-linecap="round" fill="none"/>
-  </svg>
-
-  <!-- Right cherry tree -->
-  <svg class="tree-right" viewBox="0 0 380 560" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMaxYMax meet">
-    <defs>
-      <filter id="br-soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="10"/></filter>
-      <filter id="br-mid"  x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5.5"/></filter>
-      <filter id="br-crisp" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
-    </defs>
-    <!-- base blossom cloud -->
-    <g filter="url(#br-soft)" opacity="0.88">
-      <ellipse cx="210" cy="210" rx="155" ry="130" fill="#ffb7c5"/>
-      <ellipse cx="310" cy="195" rx="115" ry="98"  fill="#ffc8d5"/>
-      <ellipse cx="110" cy="205" rx="120" ry="102" fill="#ffafc0"/>
-      <ellipse cx="230" cy="130" rx="130" ry="92"  fill="#ffbfcf"/>
-      <ellipse cx="320" cy="155" rx="100" ry="85"  fill="#ffc4d2"/>
-      <ellipse cx="80"  cy="225" rx="88"  ry="78"  fill="#ffd0de"/>
-      <ellipse cx="370" cy="210" rx="75"  ry="68"  fill="#ffb8c8"/>
-      <ellipse cx="160" cy="105" rx="105" ry="72"  fill="#ffcad6"/>
-    </g>
-    <!-- mid depth -->
-    <g filter="url(#br-mid)" opacity="0.62">
-      <ellipse cx="220" cy="185" rx="105" ry="85"  fill="#f598b0"/>
-      <ellipse cx="300" cy="175" rx="92"  ry="76"  fill="#f590a8"/>
-      <ellipse cx="130" cy="178" rx="82"  ry="68"  fill="#f8a8be"/>
-      <ellipse cx="200" cy="118" rx="90"  ry="62"  fill="#f8b2c6"/>
-    </g>
-    <!-- highlight puffs -->
-    <g filter="url(#br-crisp)" opacity="0.52">
-      <ellipse cx="250" cy="148" rx="58" ry="46" fill="#ffe0ea"/>
-      <ellipse cx="160" cy="155" rx="52" ry="42" fill="#ffdce8"/>
-      <ellipse cx="325" cy="168" rx="50" ry="40" fill="#ffd8e6"/>
-      <ellipse cx="95"  cy="200" rx="46" ry="37" fill="#ffe4ec"/>
-    </g>
-    <!-- branches -->
-    <!-- main trunk – leans left -->
-    <path d="M305 560 C298 482 288 402 276 328 C264 258 248 200 230 152 C216 112 200 76 186 40" stroke="#2d1205" stroke-width="16" stroke-linecap="round" fill="none"/>
-    <!-- lower right branch -->
-    <path d="M288 420 C318 375 348 328 378 285" stroke="#3a1808" stroke-width="10" stroke-linecap="round" fill="none"/>
-    <!-- right-upper branch -->
-    <path d="M272 355 C310 305 348 255 385 205 C400 182 412 158 418 130" stroke="#3a1808" stroke-width="8" stroke-linecap="round" fill="none"/>
-    <!-- left branch -->
-    <path d="M258 308 C210 262 158 218 105 178 C68 150 30 126 -12 102" stroke="#3a1808" stroke-width="8" stroke-linecap="round" fill="none"/>
-    <!-- upper center-left -->
-    <path d="M238 238 C200 198 158 162 115 124 C80 94 44 66 4 40" stroke="#4a2010" stroke-width="6" stroke-linecap="round" fill="none"/>
-    <!-- upper right -->
-    <path d="M245 210 C278 172 312 138 348 102 C372 78 392 55 408 28" stroke="#4a2010" stroke-width="6" stroke-linecap="round" fill="none"/>
-    <!-- thin top twigs -->
-    <path d="M218 148 C202 118 184 90 166 62 C152 40 136 20 118 2" stroke="#5a2812" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M225 125 C244 98 265 74 288 50 C305 32 325 14 346 -2" stroke="#5a2812" stroke-width="4" stroke-linecap="round" fill="none"/>
-    <path d="M212 170 C185 145 156 122 128 98 C106 80 84 62 60 42" stroke="#5a2812" stroke-width="3" stroke-linecap="round" fill="none"/>
-  </svg>
-</div>
+<div id="scene"></div>
 
 <!-- Petals -->
 <div id="petals"></div>
@@ -678,57 +532,61 @@ function initPetals() {
   }
 }
 
-// ── Scroll parallax + fade-in ──
+// ── Scroll fade-in + mouse parallax ──
 function initScroll() {
-  // Parallax for trees (subtle)
-  const treeLeft  = document.querySelector('.tree-left');
-  const treeRight = document.querySelector('.tree-right');
-
-  // IntersectionObserver for fade-in
   const fadeObs = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
         e.target.classList.add('visible');
-        // stagger cards within a section
         if (e.target.classList.contains('section')) {
-          const cards = e.target.querySelectorAll('.node-card');
-          cards.forEach((c, i) => {
-            setTimeout(() => c.classList.add('visible'), i * 60);
+          e.target.querySelectorAll('.node-card').forEach((c, i) => {
+            setTimeout(() => c.classList.add('visible'), i * 55);
           });
         }
       }
     });
   }, { threshold: 0.08 });
-
   document.querySelectorAll('.radar, .section').forEach(el => fadeObs.observe(el));
+}
 
-  // Scroll listener for parallax + background warmth
-  const warmOverlay = document.getElementById('scroll-warm');
+// ── Mouse parallax (petals drift) + card tilt ──
+function initMouse() {
+  const petalsEl = document.getElementById('petals');
+  let mx = 0, my = 0;
   let ticking = false;
-  window.addEventListener('scroll', () => {
+
+  document.addEventListener('mousemove', e => {
+    mx = (e.clientX / window.innerWidth  - 0.5) * 2;  // -1 to 1
+    my = (e.clientY / window.innerHeight - 0.5) * 2;
     if (ticking) return;
     requestAnimationFrame(() => {
-      const sy = window.scrollY;
-      const maxScroll = document.body.scrollHeight - window.innerHeight;
-      const progress = maxScroll > 0 ? Math.min(sy / maxScroll, 1) : 0;
-
-      // Trees drift upward (parallax)
-      if (treeLeft)  treeLeft.style.transform  = `translateY(${sy * 0.18}px)`;
-      if (treeRight) treeRight.style.transform = `translateY(${sy * 0.12}px)`;
-
-      // Background warm shift: overlay a dusk gradient that fades in as you scroll
-      warmOverlay.style.background = `linear-gradient(175deg, rgba(160,80,120,${progress*0.22}) 0%, rgba(180,100,60,${progress*0.18}) 40%, rgba(200,140,80,${progress*0.12}) 100%)`;
-
+      // petals layer drifts gently with mouse
+      petalsEl.style.transform = `translate(${mx * 12}px, ${my * 8}px)`;
       ticking = false;
     });
     ticking = true;
-  }, { passive: true });
+  });
+
+  // card 3D tilt on hover
+  document.addEventListener('mousemove', e => {
+    const card = e.target.closest('.node-card');
+    if (!card) return;
+    const r = card.getBoundingClientRect();
+    const cx = (e.clientX - r.left) / r.width  - 0.5;  // -0.5 to 0.5
+    const cy = (e.clientY - r.top)  / r.height - 0.5;
+    card.style.transform = `perspective(600px) rotateY(${cx * 8}deg) rotateX(${-cy * 6}deg) translateY(-2px)`;
+  });
+  document.addEventListener('mouseleave', e => {
+    const card = e.target.closest?.('.node-card');
+    if (card) card.style.transform = '';
+  }, true);
 }
 
 // ── Data ──
 async function init() {
   initPetals();
   initScroll();
+  initMouse();
   try {
     const r = await fetch('data/nodes.json?t=' + Date.now());
     allNodes = (await r.json()).nodes || [];
