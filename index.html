@@ -199,9 +199,13 @@ body {
 .section { margin-bottom: 36px; }
 .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .section-title {
-  font-family: var(--font-serif); font-style: italic;
-  font-size: 18px; color: var(--paper); letter-spacing: normal;
-  text-shadow: 0 1px 4px rgba(30,60,90,0.25);
+  font-family: var(--font-ui); font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,0.92); letter-spacing: 0.06em;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.32);
+  border-radius: 20px;
+  padding: 4px 12px;
 }
 .section-count { font-size: 12px; color: rgba(255,255,255,0.7); }
 .section-line { flex: 1; height: 1px; background: rgba(255,255,255,0.3); }
@@ -213,7 +217,6 @@ body {
 .node-card {
   background: rgba(255,252,245,0.93);
   border: 1.5px solid rgba(180,150,120,0.35);
-  /* slightly uneven radius for hand-drawn feel */
   border-radius: 18px 22px 20px 24px / 22px 18px 24px 20px;
   box-shadow:
     3px 4px 0px rgba(160,130,100,0.18),
@@ -247,6 +250,22 @@ body {
     4px 6px 0px rgba(160,130,100,0.22),
     8px 14px 28px rgba(80,50,30,0.14);
 }
+/* completeness tiers: 1 / 2 / 3 elements filled */
+.node-card.c1 {
+  background: rgba(242,246,255,0.92);
+  border-color: rgba(140,160,210,0.30);
+  box-shadow: 3px 4px 0px rgba(120,140,190,0.14), 6px 8px 16px rgba(60,80,140,0.08);
+}
+.node-card.c2 {
+  background: rgba(255,252,245,0.93);
+  border-color: rgba(180,150,120,0.35);
+}
+.node-card.c3 {
+  background: rgba(240,251,243,0.94);
+  border-color: rgba(110,165,120,0.35);
+  box-shadow: 3px 4px 0px rgba(90,150,100,0.15), 6px 8px 16px rgba(40,90,50,0.09);
+}
+
 .node-card.can-film::before {
   content: '';
   position: absolute; top: 0; left: 0; right: 0; height: 2px;
@@ -670,10 +689,12 @@ function render() {
 function cardHtml(n) {
   const film = canFilm(n);
   const hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'case'), hasM=hasPart(n,'method')||(n.method_ai&&n.method_ai.length);
+  const count = [hasJ,hasC,hasM].filter(Boolean).length;
+  const cClass = count >= 3 ? ' c3' : count >= 2 ? ' c2' : ' c1';
   const dots=[{l:'判',h:hasJ},{l:'案',h:hasC},{l:'方',h:hasM}].map(d=>`<span class="c-dot${d.h?' has':''}">${d.l}</span>`).join('');
   const motif = n.motif ? `<span class="motif-badge has">🌿</span>` : '';
   const filmBadge = film ? `<span class="film-badge">🌸</span>` : '';
-  return `<div class="node-card${film?' can-film':''}" id="node-${n.id}" onclick="openDetail('${n.id}')">
+  return `<div class="node-card${cClass}${film?' can-film':''}" id="node-${n.id}" onclick="openDetail('${n.id}')">
     <div class="card-domain"><span class="card-domain-dot"></span>${esc(n.domain||'')}</div>
     <div class="card-trigger">${esc(n.trigger)}</div>
     <div class="card-footer"><div class="c-dots">${dots}</div><div class="card-right">${motif}${filmBadge}<span class="card-date">${((n.updatedAt||n.date)||'').slice(5)}</span><span style="font-size:9px;color:var(--mist);margin-left:3px">#${n.id}</span></div></div>
