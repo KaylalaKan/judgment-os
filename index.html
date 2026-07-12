@@ -676,7 +676,7 @@ function cardHtml(n) {
   return `<div class="node-card${film?' can-film':''}" id="node-${n.id}" onclick="openDetail('${n.id}')">
     <div class="card-domain"><span class="card-domain-dot"></span>${esc(n.domain||'')}</div>
     <div class="card-trigger">${esc(n.trigger)}</div>
-    <div class="card-footer"><div class="c-dots">${dots}</div><div class="card-right">${motif}${filmBadge}<span class="card-date">${((n.updatedAt||n.date)||'').slice(5)}</span></div></div>
+    <div class="card-footer"><div class="c-dots">${dots}</div><div class="card-right">${motif}${filmBadge}<span class="card-date">${((n.updatedAt||n.date)||'').slice(5)}</span><span style="font-size:9px;color:var(--mist);margin-left:3px">#${n.id}</span></div></div>
   </div>`;
 }
 
