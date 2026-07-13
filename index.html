@@ -6,7 +6,7 @@
 <title>Mental Garden</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=Kaushan+Script&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -88,6 +88,26 @@ body {
   80%  { transform: translateY(84vh) translateX(28px) rotate(640deg); }
   95%  { opacity: 0.5; }
   100% { transform: translateY(112vh) translateX(6px) rotate(800deg); opacity: 0; }
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative; z-index: 10;
+  min-height: 260px;
+  display: flex; align-items: flex-start; justify-content: flex-end;
+  padding: 48px 8% 28px 20px;
+  animation: heroIn 1.3s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes heroIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.logo-block { display: flex; flex-direction: column; align-items: flex-start; }
+.logo-svg { display: block; width: 400px; height: auto; }
+.hero-sub {
+  font-family: 'Caveat', cursive;
+  font-size: 17px; font-weight: 400;
+  color: rgba(255,248,240,0.78);
+  letter-spacing: 0.03em;
+  transform: rotate(-0.5deg);
+  margin-top: 4px; padding-left: 6px;
 }
 
 /* ── NAV ── */
@@ -444,9 +464,54 @@ body {
 <!-- Petals -->
 <div id="petals"></div>
 
+<!-- Hero title -->
+<div class="hero">
+  <div class="logo-block">
+    <svg class="logo-svg" viewBox="0 0 520 240" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="db" x="-8%" y="-16%" width="124%" height="148%" color-interpolation-filters="sRGB">
+          <feTurbulence type="fractalNoise" baseFrequency="0.025 0.04" numOctaves="4" seed="17" result="cn"/>
+          <feDisplacementMap in="SourceGraphic" in2="cn" scale="7" xChannelSelector="R" yChannelSelector="G" result="disp"/>
+          <feTurbulence type="fractalNoise" baseFrequency="0.08 0.055" numOctaves="3" seed="6" result="fn"/>
+          <feColorMatrix in="fn" type="matrix"
+            values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0.55 0.55 0.55 0 -0.42" result="bm"/>
+          <feComposite in="disp" in2="bm" operator="in"/>
+        </filter>
+        <filter id="ff" x="-5%" y="-40%" width="115%" height="200%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.02 0.06" numOctaves="2" seed="9" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+      </defs>
+      <g transform="translate(10,0) skewX(-10)" filter="url(#db)">
+        <text x="0" y="84" font-family="'Kaushan Script', cursive" font-size="78" fill="#ffffff" letter-spacing="1.5">Mental</text>
+        <text x="0" y="200" font-family="'Kaushan Script', cursive" font-size="98" fill="#ffffff" letter-spacing="1.5">Garden</text>
+      </g>
+      <g transform="translate(330, 63)" opacity="0.92">
+        <ellipse cx="0"    cy="-8"   rx="5.8" ry="3.6" transform="rotate(0)"              fill="rgba(255,238,244,0.96)"/>
+        <ellipse cx="7.6"  cy="-2.5" rx="5.8" ry="3.6" transform="rotate(72  7.6 -2.5)"  fill="rgba(255,238,244,0.96)"/>
+        <ellipse cx="4.7"  cy="6.5"  rx="5.8" ry="3.6" transform="rotate(144 4.7 6.5)"   fill="rgba(255,238,244,0.96)"/>
+        <ellipse cx="-4.7" cy="6.5"  rx="5.8" ry="3.6" transform="rotate(216 -4.7 6.5)"  fill="rgba(255,238,244,0.96)"/>
+        <ellipse cx="-7.6" cy="-2.5" rx="5.8" ry="3.6" transform="rotate(288 -7.6 -2.5)" fill="rgba(255,238,244,0.96)"/>
+        <circle cx="0" cy="0" r="3.2" fill="rgba(255,218,90,0.95)"/>
+        <circle cx="0"    cy="-4.8" r="1" fill="rgba(255,195,50,0.9)"/>
+        <circle cx="4.6"  cy="-1.5" r="1" fill="rgba(255,195,50,0.9)"/>
+        <circle cx="2.8"  cy="4.0"  r="1" fill="rgba(255,195,50,0.9)"/>
+        <circle cx="-2.8" cy="4.0"  r="1" fill="rgba(255,195,50,0.9)"/>
+        <circle cx="-4.6" cy="-1.5" r="1" fill="rgba(255,195,50,0.9)"/>
+      </g>
+      <g transform="translate(10,0) skewX(-10)" filter="url(#ff)">
+        <path d="M 4,218 C 90,238 220,232 370,216" stroke="#ffffff" stroke-width="3.0" fill="none" stroke-linecap="round" opacity="0.94"/>
+        <path d="M 370,216 C 420,209 460,202 496,192" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.86"/>
+        <path d="M 450,198 C 490,188 528,176 564,160 C 588,149 606,140 620,130" stroke="#ffffff" stroke-width="1.0" fill="none" stroke-linecap="round" opacity="0.68"/>
+        <path d="M 530,172 C 560,160 586,148 610,133" stroke="#ffffff" stroke-width="0.45" fill="none" stroke-linecap="round" opacity="0.38"/>
+      </g>
+    </svg>
+    <div class="hero-sub">Can't wait to watch Kayla grow</div>
+  </div>
+</div>
+
 <div class="nav-wrap">
   <nav class="nav">
-    <div class="wordmark">Mental <em>Garden</em></div>
     <div class="nav-filters" id="domainFilters">
       <button class="domain-pill active" data-domain="">全部</button>
       <button class="domain-pill" data-domain="个人成长">个人成长</button>
@@ -646,8 +711,11 @@ function render() {
   let html = '';
   const filmable = nodes.filter(canFilm);
   if (filmable.length) {
-    html += `<div class="radar"><div class="radar-head"><span class="radar-label">可以拍了</span><div class="shimmer-line"></div></div><div class="radar-chips">`;
-    filmable.forEach(n => { html += `<span class="radar-chip" onclick="openDetail('${n.id}')"><span class="radar-chip-dot"></span>${esc(short(n.trigger,20))}</span>`; });
+    // shuffle and pick 2-3 at random each render
+    const shuffled = [...filmable].sort(() => Math.random() - 0.5);
+    const pick = shuffled.slice(0, Math.min(3, Math.max(2, shuffled.length)));
+    html += `<div class="radar"><div class="radar-head"><span class="radar-label">今天可以拍</span><div class="shimmer-line"></div></div><div class="radar-chips">`;
+    pick.forEach(n => { html += `<span class="radar-chip" onclick="openDetail('${n.id}')"><span class="radar-chip-dot"></span>${esc(short(n.trigger,20))}</span>`; });
     html += `</div></div>`;
   }
 
