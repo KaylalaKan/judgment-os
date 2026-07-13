@@ -769,18 +769,23 @@ function render() {
   }, 0);
 }
 
-function cardHtml(n) {
-  const film = canFilm(n);
+function maturity(n) {
   const hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'case'), hasM=hasPart(n,'method')||(n.method_ai&&n.method_ai.length);
-  const count = [hasJ,hasC,hasM].filter(Boolean).length;
-  const cClass = count >= 3 ? ' c3' : count >= 2 ? ' c2' : ' c1';
+  if (hasJ&&hasC&&hasM) return {icon:'🍎', cls:'c3'};
+  if (hasJ&&hasC)        return {icon:'🌸', cls:'c2'};
+  if (hasJ&&hasM)        return {icon:'🌿', cls:'c2'};
+  if (hasJ)              return {icon:'🌱', cls:'c1'};
+  return {icon:'', cls:'c1'};
+}
+
+function cardHtml(n) {
+  const hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'case'), hasM=hasPart(n,'method')||(n.method_ai&&n.method_ai.length);
+  const mat = maturity(n);
   const dots=[{l:'判',h:hasJ},{l:'案',h:hasC},{l:'方',h:hasM}].map(d=>`<span class="c-dot${d.h?' has':' seed'}">${d.h?d.l:'🌱'}</span>`).join('');
-  const motif = n.motif ? `<span class="motif-badge has">🌿</span>` : '';
-  const filmBadge = film ? `<span class="film-badge">🌸</span>` : '';
-  return `<div class="node-card${cClass}${film?' can-film':''}" id="node-${n.id}" onclick="openDetail('${n.id}')">
+  return `<div class="node-card ${mat.cls}${mat.cls==='c3'?' can-film':''}" id="node-${n.id}" onclick="openDetail('${n.id}')">
     <div class="card-domain"><span class="card-domain-dot"></span>${esc(n.domain||'')}</div>
     <div class="card-trigger">${esc(n.trigger)}</div>
-    <div class="card-footer"><div class="c-dots">${dots}</div><div class="card-right">${motif}${filmBadge}<span class="card-date">${((n.updatedAt||n.date)||'').slice(5)}</span><span style="font-size:9px;color:var(--mist);margin-left:3px">#${n.id}</span></div></div>
+    <div class="card-footer"><div class="c-dots">${dots}</div><div class="card-right"><span style="font-size:11px">${mat.icon}</span><span class="card-date">${((n.updatedAt||n.date)||'').slice(5)}</span><span style="font-size:9px;color:var(--mist);margin-left:3px">#${n.id}</span></div></div>
   </div>`;
 }
 
@@ -813,6 +818,15 @@ function openDetail(id) {
     <span class="dc-item${hasC?' has':''}"><span class="dc-dot"></span>案例</span>
     <span class="dc-item${(hasM||hasMAI)?' has':''}"><span class="dc-dot"></span>方法</span>
   </div>`;
+  if (n.connections && n.connections.length) {
+    const related = n.connections.map(id=>allNodes.find(x=>x.id===id)).filter(Boolean);
+    body+=`<div class="detail-section" style="margin-top:12px"><div class="detail-label">🌱 和它一起长大的</div>`;
+    related.forEach(r=>{
+      const m=maturity(r);
+      body+=`<div onclick="openDetail('${r.id}')" style="cursor:pointer;padding:8px 12px;margin-bottom:6px;background:rgba(168,212,240,0.08);border:1px solid rgba(168,212,240,0.2);border-radius:10px;font-size:12px;color:var(--slate);display:flex;align-items:center;gap:8px"><span>${m.icon}</span><span>${esc(short(r.trigger,38))}</span></div>`;
+    });
+    body+=`</div>`;
+  }
   document.getElementById('detailPanel').innerHTML=`
     <div class="detail-close-row"><button class="detail-close" onclick="closeDetail()">✕</button></div>
     <div class="detail-head"><div class="detail-badges">${domBadge}${motifBadge}${filmBadge}</div><div class="detail-trigger">${esc(n.trigger)}</div><div class="detail-date">${n.updatedAt||n.date||''}</div></div>
