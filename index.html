@@ -692,7 +692,9 @@ async function init() {
   initMouse();
   try {
     const r = await fetch('data/nodes.json?t=' + Date.now());
-    allNodes = (await r.json()).nodes || [];
+    const data = await r.json();
+    allNodes = data.nodes || [];
+    window._questions = data.questions || [];
   } catch(e) { allNodes = []; }
   document.getElementById('domainFilters').addEventListener('click', e => {
     const btn = e.target.closest('.domain-pill'); if (!btn) return;
@@ -738,20 +740,32 @@ function render() {
     html += `</div></div>`;
   }
 
-  const themeMap = {};
+  const questions = (window._questions || []);
+  const qMap = {};
+  questions.forEach(q => { qMap[q.id] = { q, nodes: [] }; });
+  const unassigned = [];
   nodes.forEach(n => {
-    (n.themes && n.themes.length ? n.themes : ['其他']).forEach(t => { if (!themeMap[t]) themeMap[t]=[]; themeMap[t].push(n); });
+    const qs = (n.questions || []).filter(qid => qMap[qid]);
+    if (qs.length) { qs.forEach(qid => qMap[qid].nodes.push(n)); }
+    else { unassigned.push(n); }
   });
 
   if (!nodes.length) {
     html += `<div class="card-grid"><div class="empty">没有匹配的节点</div></div>`;
   } else {
     const rendered = new Set();
-    Object.keys(themeMap).forEach(theme => {
-      html += `<div class="section"><div class="section-head"><span class="section-title">${esc(theme)}</span><span class="section-count">${themeMap[theme].length}</span><div class="section-line"></div></div><div class="card-grid">`;
-      themeMap[theme].forEach(n => { if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); } });
+    questions.forEach(q => {
+      const bucket = qMap[q.id].nodes;
+      if (!bucket.length) return;
+      html += `<div class="section"><div class="section-head"><span class="section-title">${esc(q.text)}</span><span class="section-count">${bucket.length}</span><div class="section-line"></div></div><div class="card-grid">`;
+      bucket.forEach(n => { if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); } });
       html += `</div></div>`;
     });
+    if (unassigned.length) {
+      html += `<div class="section"><div class="section-head"><span class="section-title" style="opacity:0.5">等待发芽</span><span class="section-count">${unassigned.length}</span><div class="section-line"></div></div><div class="card-grid">`;
+      unassigned.forEach(n => { if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); } });
+      html += `</div></div>`;
+    }
   }
   app.innerHTML = html;
 
