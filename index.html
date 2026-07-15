@@ -152,6 +152,12 @@ body {
 }
 .domain-pill:hover { background: rgba(74,144,193,0.1); color: var(--charcoal); }
 .domain-pill.active { background: var(--charcoal); color: var(--paper); border-color: var(--charcoal); }
+.domain-pill.film-tab {
+  color: var(--fern); border-color: rgba(106,174,110,0.4);
+  background: rgba(106,174,110,0.08);
+}
+.domain-pill.film-tab:hover { background: rgba(106,174,110,0.16); }
+.domain-pill.film-tab.active { background: var(--fern); color: var(--paper); border-color: var(--fern); }
 
 .nav-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
 .search-wrap { position: relative; }
@@ -224,16 +230,28 @@ body {
 .section { margin-bottom: 36px; }
 .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .section-title {
-  font-family: var(--font-ui); font-size: 12px; font-weight: 500;
-  color: rgba(255,255,255,0.92); letter-spacing: 0.06em;
-  background: rgba(255,255,255,0.18);
+  font-family: var(--font-ui); font-size: 13px; font-weight: 600;
+  color: var(--charcoal); letter-spacing: 0.02em;
+  background: rgba(255,255,255,0.92);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.32);
+  border: 1px solid rgba(0,0,0,0.1);
   border-radius: 20px;
-  padding: 4px 12px;
+  padding: 5px 14px;
 }
-.section-count { font-size: 12px; color: rgba(255,255,255,0.7); }
-.section-line { flex: 1; height: 1px; background: rgba(255,255,255,0.3); }
+.section-count { font-size: 12px; color: var(--ash); }
+.section-line { flex: 1; height: 1px; background: rgba(0,0,0,0.1); }
+
+/* ── QUESTION NAV (top of domain view) ── */
+.q-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+.q-nav-pill {
+  padding: 6px 16px; border-radius: var(--r-btn);
+  font-size: 13px; color: var(--slate);
+  background: rgba(255,255,255,0.85);
+  border: 1px solid rgba(0,0,0,0.1);
+  cursor: pointer; transition: all 0.15s;
+  backdrop-filter: blur(6px);
+}
+.q-nav-pill:hover { background: rgba(255,255,255,1); color: var(--charcoal); border-color: rgba(0,0,0,0.2); }
 
 /* ── CARD GRID ── */
 .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
@@ -709,7 +727,7 @@ async function init() {
     btn.textContent = d;
     bar.appendChild(btn);
   });
-  // 个人成长 tab (for unassigned nodes)
+  // 个人成长 tab
   if (!domains.includes('个人成长')) {
     const btn = document.createElement('button');
     btn.className = 'domain-pill';
@@ -717,6 +735,12 @@ async function init() {
     btn.textContent = '个人成长';
     bar.appendChild(btn);
   }
+  // 可拍 tab — distinct style
+  const filmBtn = document.createElement('button');
+  filmBtn.className = 'domain-pill film-tab';
+  filmBtn.dataset.domain = '__film__';
+  filmBtn.textContent = '可拍';
+  bar.appendChild(filmBtn);
   render();
 }
 
@@ -744,9 +768,20 @@ function render() {
   }
 
   let html = '';
+
+  // ── 可拍 tab ──────────────────────────────────────────────────────
+  if (activeDomain === '__film__') {
+    const filmable = nodes.filter(canFilm);
+    html += `<div class="section"><div class="section-head"><span class="section-title">🌸 可以拍的内容</span><span class="section-count">${filmable.length}</span><div class="section-line"></div></div><div class="card-grid">`;
+    filmable.forEach(n => { html += cardHtml(n); });
+    html += `</div></div>`;
+    app.innerHTML = html;
+    return;
+  }
+
+  // ── radar（仅非可拍 tab 显示）────────────────────────────────────
   const filmable = nodes.filter(canFilm);
-  if (filmable.length) {
-    // shuffle and pick 2-3 at random each render
+  if (filmable.length && !activeDomain) {
     const shuffled = [...filmable].sort(() => Math.random() - 0.5);
     const pick = shuffled.slice(0, Math.min(3, Math.max(2, shuffled.length)));
     html += `<div class="radar"><div class="radar-head"><span class="radar-label">今天可以拍</span><div class="shimmer-line"></div></div><div class="radar-chips">`;
@@ -764,17 +799,29 @@ function render() {
     else { unassigned.push(n); }
   });
 
+  // ── 问题导航（进入具体 domain tab 时显示）──────────────────────────
+  if (activeDomain && activeDomain !== '个人成长') {
+    const domainQs = questions.filter(q => q.domain === activeDomain);
+    if (domainQs.length > 1) {
+      html += `<div class="q-nav">`;
+      domainQs.forEach(q => {
+        html += `<span class="q-nav-pill" onclick="document.getElementById('q-${q.id}').scrollIntoView({behavior:'smooth',block:'start'})">${esc(q.text)}</span>`;
+      });
+      html += `</div>`;
+    }
+  }
+
   if (!nodes.length) {
     html += `<div class="card-grid"><div class="empty">没有匹配的节点</div></div>`;
   } else {
     const rendered = new Set();
-    const visibleQuestions = activeDomain
+    const visibleQuestions = activeDomain && activeDomain !== '个人成长'
       ? questions.filter(q => q.domain === activeDomain)
       : questions;
     visibleQuestions.forEach(q => {
       const bucket = qMap[q.id].nodes;
       if (!bucket.length) return;
-      html += `<div class="section"><div class="section-head"><span class="section-title">${esc(q.text)}</span><span class="section-count">${bucket.length}</span><div class="section-line"></div></div><div class="card-grid">`;
+      html += `<div class="section" id="q-${q.id}"><div class="section-head"><span class="section-title">${esc(q.text)}</span><span class="section-count">${bucket.length}</span><div class="section-line"></div></div><div class="card-grid">`;
       bucket.forEach(n => { if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); } });
       html += `</div></div>`;
     });
