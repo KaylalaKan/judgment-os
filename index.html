@@ -533,10 +533,6 @@ body {
   <nav class="nav">
     <div class="nav-filters" id="domainFilters">
       <button class="domain-pill active" data-domain="">全部</button>
-      <button class="domain-pill" data-domain="个人成长">个人成长</button>
-      <button class="domain-pill" data-domain="表达">表达</button>
-      <button class="domain-pill" data-domain="AI">AI</button>
-      <button class="domain-pill" data-domain="学习">学习</button>
     </div>
     <div class="nav-right">
       <div class="search-wrap">
@@ -571,7 +567,8 @@ body {
           <option value="">选择领域…</option>
           <option value="个人成长">个人成长</option>
           <option value="表达">表达</option>
-          <option value="AI">AI</option>
+          <option value="AI落地">AI落地</option>
+          <option value="课程开发">课程开发</option>
           <option value="学习">学习</option>
         </select>
       </div>
@@ -702,6 +699,24 @@ async function init() {
     document.querySelectorAll('.domain-pill').forEach(b => b.classList.toggle('active', b===btn));
     render();
   });
+  // build tabs from question domains
+  const domains = [...new Set((window._questions||[]).map(q=>q.domain).filter(Boolean))];
+  const bar = document.getElementById('domainFilters');
+  domains.forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'domain-pill';
+    btn.dataset.domain = d;
+    btn.textContent = d;
+    bar.appendChild(btn);
+  });
+  // 个人成长 tab (for unassigned nodes)
+  if (!domains.includes('个人成长')) {
+    const btn = document.createElement('button');
+    btn.className = 'domain-pill';
+    btn.dataset.domain = '个人成长';
+    btn.textContent = '个人成长';
+    bar.appendChild(btn);
+  }
   render();
 }
 
@@ -710,9 +725,8 @@ function hasPart(n,f) { return !!(n[f] && n[f].trim()); }
 
 function filtered() {
   return allNodes.filter(n => {
-    if (activeDomain && n.domain !== activeDomain) return false;
     if (searchQuery) {
-      const t=[n.trigger,n.evidence,n.judgment,n.method,...(n.themes||[])].join(' ').toLowerCase();
+      const t=[n.trigger,n.evidence,n.judgment,n.method].join(' ').toLowerCase();
       if (!searchQuery.toLowerCase().split(/\s+/).every(w=>t.includes(w))) return false;
     }
     return true;
@@ -754,14 +768,18 @@ function render() {
     html += `<div class="card-grid"><div class="empty">没有匹配的节点</div></div>`;
   } else {
     const rendered = new Set();
-    questions.forEach(q => {
+    const visibleQuestions = activeDomain
+      ? questions.filter(q => q.domain === activeDomain)
+      : questions;
+    visibleQuestions.forEach(q => {
       const bucket = qMap[q.id].nodes;
       if (!bucket.length) return;
       html += `<div class="section"><div class="section-head"><span class="section-title">${esc(q.text)}</span><span class="section-count">${bucket.length}</span><div class="section-line"></div></div><div class="card-grid">`;
       bucket.forEach(n => { if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); } });
       html += `</div></div>`;
     });
-    if (unassigned.length) {
+    const showUnassigned = !activeDomain || activeDomain === '个人成长';
+    if (showUnassigned && unassigned.length) {
       html += `<div class="section"><div class="section-head"><span class="section-title" style="opacity:0.5">等待发芽</span><span class="section-count">${unassigned.length}</span><div class="section-line"></div></div><div class="card-grid">`;
       unassigned.forEach(n => { if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); } });
       html += `</div></div>`;
@@ -801,7 +819,7 @@ function cardHtml(n) {
   const mat = maturity(n);
   const dots=[{l:'判',h:hasJ},{l:'证',h:hasC},{l:'方',h:hasM}].map(d=>`<span class="c-dot${d.h?' has':' seed'}">${d.h?d.l:'🌱'}</span>`).join('');
   return `<div class="node-card ${mat.cls}${mat.cls==='c3'?' can-film':''}" id="node-${n.id}" onclick="openDetail('${n.id}')">
-    <div class="card-domain"><span class="card-domain-dot"></span>${esc(n.domain||'')}</div>
+    <div class="card-domain"><span class="card-domain-dot"></span>${esc((window._questions||[]).find(q=>(n.questions||[]).includes(q.id))?.domain||'')}</div>
     <div class="card-trigger">${esc(n.trigger)}</div>
     <div class="card-footer"><div class="c-dots">${dots}</div><div class="card-right"><span style="font-size:11px">${mat.icon}</span><span class="card-date">${((n.updatedAt||n.date)||'').slice(5)}</span><span style="font-size:9px;color:var(--mist);margin-left:3px">#${n.id}</span></div></div>
   </div>`;
@@ -811,7 +829,8 @@ function openDetail(id) {
   const n = allNodes.find(x=>x.id===id); if (!n) return;
   const film=canFilm(n), hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'evidence'), hasM=hasPart(n,'method');
   const hasCAI=!!(n.case_note&&n.case_note.trim()), hasMAI=n.method_ai&&n.method_ai.length;
-  const domBadge=n.domain?`<span class="badge domain">${esc(n.domain)}</span>`:'';
+  const nodeDomain = (window._questions||[]).find(q=>(n.questions||[]).includes(q.id))?.domain||'';
+  const domBadge=nodeDomain?`<span class="badge domain">${esc(nodeDomain)}</span>`:'';
   const motifBadge=n.motif?`<span class="badge motif">🌿 ${esc(short(n.motif,16))}</span>`:'';
   const filmBadge=film?`<span class="badge film">🌸 可以拍</span>`:'';
   let body='';
