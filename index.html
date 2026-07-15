@@ -705,14 +705,14 @@ async function init() {
   render();
 }
 
-function canFilm(n) { return n.judgment && (n.case || n.method || (n.method_ai && n.method_ai.length)); }
+function canFilm(n) { return n.judgment && (n.evidence || n.method || (n.method_ai && n.method_ai.length)); }
 function hasPart(n,f) { return !!(n[f] && n[f].trim()); }
 
 function filtered() {
   return allNodes.filter(n => {
     if (activeDomain && n.domain !== activeDomain) return false;
     if (searchQuery) {
-      const t=[n.trigger,n.case,n.judgment,n.method,...(n.themes||[])].join(' ').toLowerCase();
+      const t=[n.trigger,n.evidence,n.judgment,n.method,...(n.themes||[])].join(' ').toLowerCase();
       if (!searchQuery.toLowerCase().split(/\s+/).every(w=>t.includes(w))) return false;
     }
     return true;
@@ -788,7 +788,7 @@ function render() {
 }
 
 function maturity(n) {
-  const hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'case'), hasM=hasPart(n,'method')||(n.method_ai&&n.method_ai.length);
+  const hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'evidence'), hasM=hasPart(n,'method')||(n.method_ai&&n.method_ai.length);
   if (hasJ&&hasC&&hasM) return {icon:'🍎', cls:'c3'};
   if (hasJ&&hasC)        return {icon:'🌸', cls:'c2'};
   if (hasJ&&hasM)        return {icon:'🌿', cls:'c2'};
@@ -797,9 +797,9 @@ function maturity(n) {
 }
 
 function cardHtml(n) {
-  const hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'case'), hasM=hasPart(n,'method')||(n.method_ai&&n.method_ai.length);
+  const hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'evidence'), hasM=hasPart(n,'method')||(n.method_ai&&n.method_ai.length);
   const mat = maturity(n);
-  const dots=[{l:'判',h:hasJ},{l:'案',h:hasC},{l:'方',h:hasM}].map(d=>`<span class="c-dot${d.h?' has':' seed'}">${d.h?d.l:'🌱'}</span>`).join('');
+  const dots=[{l:'判',h:hasJ},{l:'证',h:hasC},{l:'方',h:hasM}].map(d=>`<span class="c-dot${d.h?' has':' seed'}">${d.h?d.l:'🌱'}</span>`).join('');
   return `<div class="node-card ${mat.cls}${mat.cls==='c3'?' can-film':''}" id="node-${n.id}" onclick="openDetail('${n.id}')">
     <div class="card-domain"><span class="card-domain-dot"></span>${esc(n.domain||'')}</div>
     <div class="card-trigger">${esc(n.trigger)}</div>
@@ -809,7 +809,7 @@ function cardHtml(n) {
 
 function openDetail(id) {
   const n = allNodes.find(x=>x.id===id); if (!n) return;
-  const film=canFilm(n), hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'case'), hasM=hasPart(n,'method');
+  const film=canFilm(n), hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'evidence'), hasM=hasPart(n,'method');
   const hasCAI=!!(n.case_note&&n.case_note.trim()), hasMAI=n.method_ai&&n.method_ai.length;
   const domBadge=n.domain?`<span class="badge domain">${esc(n.domain)}</span>`:'';
   const motifBadge=n.motif?`<span class="badge motif">🌿 ${esc(short(n.motif,16))}</span>`:'';
@@ -819,8 +819,8 @@ function openDetail(id) {
     body+=`<div class="detail-section"><div class="detail-label" style="color:#9ec9a0;border-color:#9ec9a0">🌱 Origin</div><div class="detail-text" style="color:var(--slate);font-style:italic;font-size:12px">${esc(n.origin)}</div></div>`;
   }
   if (hasC||hasCAI) {
-    body+=`<div class="detail-section"><div class="detail-label">案例</div>`;
-    if (hasC) body+=`<div class="detail-text">${esc(n.case)}</div>`;
+    body+=`<div class="detail-section"><div class="detail-label">证据</div>`;
+    if (hasC) body+=`<div class="detail-text">${esc(n.evidence)}</div>`;
     if (hasCAI) body+=`<div class="ai-block"><span class="ai-tag">AI 核实</span>${esc(n.case_note)}</div>`;
     body+=`</div>`;
   }
@@ -833,7 +833,7 @@ function openDetail(id) {
   }
   body+=`<div class="detail-completeness">
     <span class="dc-item${hasJ?' has':''}"><span class="dc-dot"></span>判断</span>
-    <span class="dc-item${hasC?' has':''}"><span class="dc-dot"></span>案例</span>
+    <span class="dc-item${hasC?' has':''}"><span class="dc-dot"></span>证据</span>
     <span class="dc-item${(hasM||hasMAI)?' has':''}"><span class="dc-dot"></span>方法</span>
   </div>`;
   if (n.connections && n.connections.length) {
