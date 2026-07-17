@@ -337,12 +337,13 @@ body {
 .c-dot {
   width: 18px; height: 18px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 9px; font-weight: 600;
-  background: rgba(168,212,240,0.15); color: var(--ash);
-  border: 1px solid rgba(168,212,240,0.3); transition: all 0.15s;
+  font-size: 9px; font-weight: 600; transition: all 0.15s;
 }
-.c-dot.has { background: rgba(68,143,82,0.12); color: var(--fern); border-color: rgba(68,143,82,0.3); }
-.c-dot.seed { background: rgba(120,190,120,0.08); color: #9ec9a0; border-color: rgba(120,190,120,0.22); font-size: 10px; }
+.c-dot.seed { background: transparent; color: rgba(0,0,0,0.2); border: 1.5px dashed rgba(0,0,0,0.12); font-size: 11px; }
+.c-dot.has-j { background: rgba(74,144,193,0.12); color: #3a82b8; border: 1.5px solid rgba(74,144,193,0.4); }
+.c-dot.has-e { background: rgba(232,130,74,0.12); color: #c96a2a; border: 1.5px solid rgba(232,130,74,0.4); }
+.c-dot.has-m { background: rgba(68,160,89,0.12); color: #3a8f4f; border: 1.5px solid rgba(68,160,89,0.4); }
+.c-dot.has-q { background: rgba(212,122,148,0.12); color: #b85878; border: 1.5px solid rgba(212,122,148,0.4); }
 
 .card-right { display: flex; align-items: center; gap: 5px; }
 .motif-badge { font-size: 10px; color: var(--ash); }
@@ -416,7 +417,10 @@ body {
   border-top: 1px solid var(--cloud);
 }
 .dc-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--ash); }
-.dc-item.has { color: var(--fern); }
+.dc-item.has-j { color: #3a82b8; }
+.dc-item.has-e { color: #c96a2a; }
+.dc-item.has-m { color: #3a8f4f; }
+.dc-item.has-q { color: #b85878; }
 .dc-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.7; }
 
 /* ── ADD OVERLAY ── */
@@ -543,7 +547,7 @@ body {
         <path d="M 540,174 C 568,162 590,150 612,136" stroke="#ffffff" stroke-width="0.45" fill="none" stroke-linecap="round" opacity="0.38"/>
       </g>
     </svg>
-    <div class="hero-sub">Can't wait to watch Kayla grow</div>
+    <div class="hero-sub">把触动养成判断，把判断养成作品</div>
   </div>
 </div>
 
@@ -744,7 +748,11 @@ async function init() {
   render();
 }
 
-function canFilm(n) { return n.judgment && (n.evidence || n.method || (n.method_ai && n.method_ai.length)); }
+function canFilm(n) {
+  const hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'evidence'), hasM=hasPart(n,'method')||(n.method_ai&&n.method_ai.length);
+  const hasQ=!!(n.quotes&&n.quotes.length);
+  return hasJ && hasC && hasM && hasQ;
+}
 function hasPart(n,f) { return !!(n[f] && n[f].trim()); }
 
 function filtered() {
@@ -854,18 +862,34 @@ function render() {
 
 function maturity(n) {
   const hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'evidence'), hasM=hasPart(n,'method')||(n.method_ai&&n.method_ai.length);
-  if (hasJ&&hasC&&hasM) return {icon:'🍎', cls:'c3'};
-  if (hasJ&&hasC)        return {icon:'🌸', cls:'c2'};
-  if (hasJ&&hasM)        return {icon:'🌿', cls:'c2'};
-  if (hasJ)              return {icon:'🌱', cls:'c1'};
+  const hasQ=!!(n.quotes&&n.quotes.length);
+  if (hasJ&&hasC&&hasM&&hasQ) return {icon:'🍎', cls:'c3'};
+  if (hasJ&&hasC&&hasM)       return {icon:'🌸', cls:'c2'};
+  if (hasJ&&(hasC||hasM))     return {icon:'🌿', cls:'c2'};
+  if (hasJ)                   return {icon:'🌱', cls:'c1'};
   return {icon:'', cls:'c1'};
 }
 
 function cardHtml(n) {
   const hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'evidence'), hasM=hasPart(n,'method')||(n.method_ai&&n.method_ai.length);
+  const hasQ=!!(n.quotes&&n.quotes.length);
   const mat = maturity(n);
-  const dots=[{l:'判',h:hasJ},{l:'证',h:hasC},{l:'方',h:hasM}].map(d=>`<span class="c-dot${d.h?' has':' seed'}">${d.h?d.l:'🌱'}</span>`).join('');
-  return `<div class="node-card ${mat.cls}${mat.cls==='c3'?' can-film':''}" id="node-${n.id}" onclick="openDetail('${n.id}')">
+  const dots=[
+    {l:'判', cls: hasJ?'has-j':'seed'},
+    {l:'证', cls: hasC?'has-e':'seed'},
+    {l:'方', cls: hasM?'has-m':'seed'},
+    {l:'句', cls: hasQ?'has-q':'seed'},
+  ].map(d=>`<span class="c-dot ${d.cls}">${d.l}</span>`).join('');
+  const barSegs=[
+    hasJ ? '#3a82b8' : 'rgba(0,0,0,0.07)',
+    hasC ? '#c96a2a' : 'rgba(0,0,0,0.07)',
+    hasM ? '#3a8f4f' : 'rgba(0,0,0,0.07)',
+    hasQ ? '#b85878' : 'rgba(0,0,0,0.07)',
+  ];
+  const barGrad=`linear-gradient(to bottom,${barSegs[0]} 0% 25%,${barSegs[1]} 25% 50%,${barSegs[2]} 50% 75%,${barSegs[3]} 75% 100%)`;
+  const colorBar=`<div style="position:absolute;top:0;left:0;bottom:0;width:4px;border-radius:20px 0 0 20px;background:${barGrad};z-index:3;pointer-events:none"></div>`;
+  return `<div class="node-card ${mat.cls}" id="node-${n.id}" onclick="openDetail('${n.id}')" style="position:relative">
+    ${colorBar}
     <div class="card-domain"><span class="card-domain-dot"></span>${esc((window._questions||[]).find(q=>(n.questions||[]).includes(q.id))?.domain||'')}</div>
     <div class="card-trigger">${esc(n.trigger)}</div>
     <div class="card-footer"><div class="c-dots">${dots}</div><div class="card-right"><span style="font-size:11px">${mat.icon}</span><span class="card-date">${((n.updatedAt||n.date)||'').slice(5)}</span><span style="font-size:9px;color:var(--mist);margin-left:3px">#${n.id}</span></div></div>
@@ -876,10 +900,11 @@ function openDetail(id) {
   const n = allNodes.find(x=>x.id===id); if (!n) return;
   const film=canFilm(n), hasJ=hasPart(n,'judgment'), hasC=hasPart(n,'evidence'), hasM=hasPart(n,'method');
   const hasCAI=!!(n.case_note&&n.case_note.trim()), hasMAI=n.method_ai&&n.method_ai.length;
+  const hasQ=!!(n.quotes&&n.quotes.length);
   const nodeDomain = (window._questions||[]).find(q=>(n.questions||[]).includes(q.id))?.domain||'';
   const domBadge=nodeDomain?`<span class="badge domain">${esc(nodeDomain)}</span>`:'';
   const motifBadge=n.motif?`<span class="badge motif">🌿 ${esc(short(n.motif,16))}</span>`:'';
-  const filmBadge=film?`<span class="badge film">🌸 可以拍</span>`:'';
+  const filmBadge=film?`<span class="badge film">🍎 可以拍</span>`:'';
   let body='';
   if (n.origin && n.origin.trim()) {
     body+=`<div class="detail-section"><div class="detail-label" style="color:#9ec9a0;border-color:#9ec9a0">🌱 Origin</div><div class="detail-text" style="color:var(--slate);font-style:italic;font-size:12px">${esc(n.origin)}</div></div>`;
@@ -897,10 +922,18 @@ function openDetail(id) {
     if (hasMAI) n.method_ai.forEach(m=>{body+=`<div class="method-ai"><span class="ai-tag">AI</span>${esc(m)}</div>`;});
     body+=`</div>`;
   }
+  if (hasQ) {
+    body+=`<div class="detail-section"><div class="detail-label" style="color:#b85878;border-color:rgba(212,122,148,0.4)">金句</div>`;
+    n.quotes.forEach(q=>{
+      body+=`<div style="margin-bottom:8px;padding:10px 14px;background:rgba(212,122,148,0.07);border-left:3px solid rgba(184,88,120,0.4);border-radius:0 10px 10px 0;font-size:13px;line-height:1.6;color:var(--charcoal);font-style:italic">${esc(q)}</div>`;
+    });
+    body+=`</div>`;
+  }
   body+=`<div class="detail-completeness">
-    <span class="dc-item${hasJ?' has':''}"><span class="dc-dot"></span>判断</span>
-    <span class="dc-item${hasC?' has':''}"><span class="dc-dot"></span>证据</span>
-    <span class="dc-item${(hasM||hasMAI)?' has':''}"><span class="dc-dot"></span>方法</span>
+    <span class="dc-item${hasJ?' has-j':''}"><span class="dc-dot"></span>判断</span>
+    <span class="dc-item${hasC?' has-e':''}"><span class="dc-dot"></span>证据</span>
+    <span class="dc-item${(hasM||hasMAI)?' has-m':''}"><span class="dc-dot"></span>方法</span>
+    <span class="dc-item${hasQ?' has-q':''}"><span class="dc-dot"></span>金句</span>
   </div>`;
   if (n.connections && n.connections.length) {
     const related = n.connections.map(id=>allNodes.find(x=>x.id===id)).filter(Boolean);
