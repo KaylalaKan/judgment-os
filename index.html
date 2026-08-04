@@ -909,6 +909,9 @@ function openDetail(id) {
   if (n.origin && n.origin.trim()) {
     body+=`<div class="detail-section"><div class="detail-label" style="color:#9ec9a0;border-color:#9ec9a0">🌱 Origin</div><div class="detail-text" style="color:var(--slate);font-style:italic;font-size:12px">${esc(n.origin)}</div></div>`;
   }
+  if (n.source_text && n.source_text.trim()) {
+    body+=`<details style="margin-bottom:12px"><summary style="font-size:11px;color:var(--ash);cursor:pointer;user-select:none;padding:6px 0;letter-spacing:0.04em">▸ 原文</summary><div style="margin-top:6px;padding:10px 12px;background:rgba(0,0,0,0.03);border-radius:8px;font-size:12px;color:var(--ash);line-height:1.7;white-space:pre-wrap">${esc(n.source_text)}</div></details>`;
+  }
   if (hasC||hasCAI) {
     body+=`<div class="detail-section"><div class="detail-label">证据</div>`;
     if (hasC) body+=`<div class="detail-text">${esc(n.evidence)}</div>`;
