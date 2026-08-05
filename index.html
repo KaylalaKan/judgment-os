@@ -293,6 +293,16 @@ body {
     4px 6px 0px rgba(160,130,100,0.22),
     8px 14px 28px rgba(80,50,30,0.14);
 }
+/* hover glow sweep overlay */
+.node-card .card-glow {
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.28) 0%, transparent 65%);
+}
 /* completeness tiers: 1 / 2 / 3 elements filled */
 .node-card.c1 {
   background: rgba(242,246,255,0.92);
@@ -688,18 +698,31 @@ function initMouse() {
     ticking = true;
   });
 
-  // card 3D tilt on hover
+  // card 3D tilt + glow on hover
   document.addEventListener('mousemove', e => {
     const card = e.target.closest('.node-card');
     if (!card) return;
     const r = card.getBoundingClientRect();
-    const cx = (e.clientX - r.left) / r.width  - 0.5;  // -0.5 to 0.5
+    const cx = (e.clientX - r.left) / r.width  - 0.5;
     const cy = (e.clientY - r.top)  / r.height - 0.5;
-    card.style.transform = `perspective(600px) rotateY(${cx * 8}deg) rotateX(${-cy * 6}deg) translateY(-2px)`;
+    const pctX = ((e.clientX - r.left) / r.width  * 100).toFixed(1) + '%';
+    const pctY = ((e.clientY - r.top)  / r.height * 100).toFixed(1) + '%';
+    card.style.transform = `perspective(600px) rotateY(${cx * 8}deg) rotateX(${-cy * 6}deg) translateY(-4px) scale(1.02)`;
+    card.style.boxShadow = `${4 + cx*4}px ${6 + cy*4}px 0px rgba(160,130,100,0.24), 10px 20px 36px rgba(80,50,30,0.18)`;
+    const glow = card.querySelector('.card-glow');
+    if (glow) {
+      glow.style.setProperty('--mx', pctX);
+      glow.style.setProperty('--my', pctY);
+      glow.style.opacity = '1';
+    }
   });
   document.addEventListener('mouseleave', e => {
     const card = e.target.closest?.('.node-card');
-    if (card) card.style.transform = '';
+    if (!card) return;
+    card.style.transform = '';
+    card.style.boxShadow = '';
+    const glow = card.querySelector('.card-glow');
+    if (glow) glow.style.opacity = '0';
   }, true);
 }
 
@@ -889,6 +912,7 @@ function cardHtml(n) {
   const colorBar=`<div style="position:absolute;top:0;left:0;bottom:0;width:4px;border-radius:20px 0 0 20px;background:${barGrad};z-index:3;pointer-events:none"></div>`;
   return `<div class="node-card ${mat.cls}" id="node-${n.id}" onclick="openDetail('${n.id}')" style="position:relative">
     ${colorBar}
+    <div class="card-glow"></div>
     <div class="card-domain"><span class="card-domain-dot"></span>${esc((window._questions||[]).find(q=>(n.questions||[]).includes(q.id))?.domain||'')}</div>
     <div class="card-trigger">${esc(n.trigger)}</div>
     <div class="card-footer"><div class="c-dots">${dots}</div><div class="card-right"><span style="font-size:11px">${mat.icon}</span><span class="card-date">${((n.updatedAt||n.date)||'').slice(5)}</span><span style="font-size:10px;color:var(--ash);font-weight:600;margin-left:3px">#${n.id}</span></div></div>
