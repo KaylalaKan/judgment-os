@@ -301,7 +301,6 @@ body {
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 2;
-  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.28) 0%, transparent 65%);
 }
 /* completeness tiers: 1 / 2 / 3 elements filled */
 .node-card.c1 {
@@ -711,8 +710,7 @@ function initMouse() {
     card.style.boxShadow = `${4 + cx*4}px ${6 + cy*4}px 0px rgba(160,130,100,0.24), 10px 20px 36px rgba(80,50,30,0.18)`;
     const glow = card.querySelector('.card-glow');
     if (glow) {
-      glow.style.setProperty('--mx', pctX);
-      glow.style.setProperty('--my', pctY);
+      glow.style.background = `radial-gradient(circle at ${pctX} ${pctY}, rgba(255,255,255,0.32) 0%, transparent 65%)`;
       glow.style.opacity = '1';
     }
   });
