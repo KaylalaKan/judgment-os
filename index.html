@@ -828,7 +828,7 @@ function render() {
   });
 
   // ── 问题导航（进入具体 domain tab 时显示）──────────────────────────
-  if (activeDomain && activeDomain !== '个人成长') {
+  if (activeDomain) {
     const domainQs = questions.filter(q => q.domain === activeDomain);
     if (domainQs.length > 1) {
       html += `<div class="q-nav">`;
@@ -843,7 +843,7 @@ function render() {
     html += `<div class="card-grid"><div class="empty">没有匹配的节点</div></div>`;
   } else {
     const rendered = new Set();
-    const visibleQuestions = activeDomain && activeDomain !== '个人成长'
+    const visibleQuestions = activeDomain
       ? questions.filter(q => q.domain === activeDomain)
       : questions;
     visibleQuestions.forEach(q => {
@@ -853,7 +853,7 @@ function render() {
       bucket.forEach(n => { if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); } });
       html += `</div></div>`;
     });
-    const showUnassigned = !activeDomain || activeDomain === '个人成长';
+    const showUnassigned = !activeDomain;
     if (showUnassigned && unassigned.length) {
       html += `<div class="section"><div class="section-head"><span class="section-title" style="opacity:0.5">等待发芽</span><span class="section-count">${unassigned.length}</span><div class="section-line"></div></div><div class="card-grid">`;
       unassigned.forEach(n => { if (!rendered.has(n.id)) { html += cardHtml(n); rendered.add(n.id); } });
