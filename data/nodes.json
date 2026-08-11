@@ -236,7 +236,9 @@
         "019",
         "021"
       ],
-      "questions": [],
+      "questions": [
+        "q005"
+      ],
       "evidence": "",
       "counter_evidence": [],
       "quotes": [
@@ -308,7 +310,9 @@
         "041",
         "042"
       ],
-      "questions": [],
+      "questions": [
+        "q005"
+      ],
       "evidence": "",
       "counter_evidence": [],
       "quotes": [
@@ -380,7 +384,9 @@
         "019",
         "022"
       ],
-      "questions": [],
+      "questions": [
+        "q003"
+      ],
       "evidence": "增长大会、老板节、AI课、老板IP、短视频——几乎每次打磨，都会把讨论拉回：「用户真正的问题是什么？」问题定了之后，课纲、标题、表达全部跟着变。问题没定准，改多少遍都在改皮毛。",
       "counter_evidence": [],
       "quotes": [
@@ -453,7 +459,9 @@
         "017",
         "022"
       ],
-      "questions": [],
+      "questions": [
+        "q003"
+      ],
       "evidence": "老板嘴上说缺增长→其实想500万播放；说学AI→其实想不要落后；说想流量→其实想成交；说想学Prompt→其实想有人告诉他该不该干。",
       "counter_evidence": [],
       "quotes": [
@@ -475,7 +483,9 @@
         "011",
         "021"
       ],
-      "questions": [],
+      "questions": [
+        "q005"
+      ],
       "evidence": "曾被指出：特别擅长把一个认知问题最后落到商业。\n聊Mental Garden→最后变成网站结构；聊AI→最后变成课程产品；聊TikTok→最后变成内容标准；聊品牌名→最后变成收购价值评估。",
       "counter_evidence": [],
       "quotes": [
@@ -498,7 +508,9 @@
         "020",
         "022"
       ],
-      "questions": [],
+      "questions": [
+        "q005"
+      ],
       "evidence": "曾被指出：不是内容人，是产品经理。\nMental Garden、直播、课程、老板节、增长大会——所有认知最后都要变成可以运行的产品。几乎每次讨论，最后一定出现「那怎么设计」。",
       "counter_evidence": [],
       "quotes": [
